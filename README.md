@@ -20,5 +20,28 @@ MNIST: <br>
 https://www.tensorflow.org/versions/r1.2/get_started/mnist/pros<br>
 https://github.com/tensorflow/tensorflow/blob/r1.2/tensorflow/examples/tutorials/mnist/mnist_deep.py
 
-# Docker images
+# Usage
+To build a corresponding docker image, one needs docker-ce (e.g. https://docs.docker.com/install/linux/docker-ce/ubuntu/):
+```
+$> cd build-cpu # or build-gpu
+$> docker build -t tf-benchmarks .
+```
+
+To run GPU version, one needs nvidia-docker (https://github.com/NVIDIA/nvidia-docker)
+
+# Compiled docker images
 https://hub.docker.com/r/vykozlov/tf-benchmarks/tags/
+
+To run CPU version, execute for example:
+```
+docker run -it vykozlov/tf-benchmarks:latest
+```
+It is also possibe to use udocker (https://github.com/indigo-dc/udocker):
+```
+udocker run vykozlov/tf-benchmarks:latest
+```
+
+To run GPU version, execute for example:
+```
+nvidia-docker run -it vykozlov/tf-benchmarks:latest-gpu
+```
