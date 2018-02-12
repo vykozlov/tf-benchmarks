@@ -1,9 +1,6 @@
 Tensorflow benchmarks packed in a docker container(s)
 ====
 
-- TOC
-{:toc}
-
 # Tensorflow
 Version: 1.5.0
 
