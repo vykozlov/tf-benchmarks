@@ -27,21 +27,20 @@ $> cd build-cpu # or build-gpu
 $> docker build -t tf-benchmarks .
 ```
 
-To run GPU version, one needs nvidia-docker (https://github.com/NVIDIA/nvidia-docker)
 
 # Compiled docker images
 https://hub.docker.com/r/vykozlov/tf-benchmarks/tags/
 
 To run CPU version, execute for example:
 ```
-docker run -it vykozlov/tf-benchmarks:latest
+$> docker run -it vykozlov/tf-benchmarks:latest
 ```
 It is also possibe to use udocker (https://github.com/indigo-dc/udocker):
 ```
-udocker run vykozlov/tf-benchmarks:latest
+$> udocker run vykozlov/tf-benchmarks:latest
 ```
 
-To run GPU version, execute for example:
+To run GPU version, one needs nvidia-docker (https://github.com/NVIDIA/nvidia-docker). Execute for example:
 ```
-nvidia-docker run -it vykozlov/tf-benchmarks:latest-gpu
+$> nvidia-docker run -it vykozlov/tf-benchmarks:latest-gpu
 ```
