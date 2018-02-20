@@ -23,7 +23,7 @@ https://github.com/tensorflow/tensorflow/blob/r1.2/tensorflow/examples/tutorials
 # Usage
 To build a corresponding docker image, one needs docker-ce (e.g. https://docs.docker.com/install/linux/docker-ce/ubuntu/):
 ```
-$> cd build-cpu # or build-gpu
+$> cp Dockerfile.(cpu|gpu) Dockerfile #copy either .cpu or .gpu version to Dockerfile
 $> docker build -t tf-benchmarks .
 ```
 
