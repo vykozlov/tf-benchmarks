@@ -8,10 +8,10 @@ Version: 1.5.0
 ## Source
 https://github.com/tensorflow/tensorflow/tree/master/tensorflow/tools/docker
 
-## Container Branches
-**build-cpu**: CPU version based on TF Dockerfile for CPU (starts with ubuntu:16.04)
+## Container Versions
+**Dcokerfile.cpu**: CPU version based on TF Dockerfile for CPU (starts with ubuntu:16.04)
 
-**build-gpu**: GPU version based on TF Dockerfile for GPU (starts with nvidia/cuda:9.0-cudnn7-runtime-ubuntu16.04)
+**Dockerfile.gpu**: GPU version based on TF Dockerfile for GPU (starts with nvidia/cuda:9.0-cudnn7-runtime-ubuntu16.04)
 
 # Benchmark files
 convnet-benchmarks: https://github.com/soumith/convnet-benchmarks/tree/master/tensorflow
