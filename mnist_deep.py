@@ -119,8 +119,6 @@ def main(_):
   # Import data
   mnist = input_data.read_data_sets(FLAGS.data_dir, one_hot=True)
 
-  # start time
-  s = time.time()
   # Create the model
   x = tf.placeholder(tf.float32, [None, 784])
 
@@ -136,19 +134,32 @@ def main(_):
   correct_prediction = tf.equal(tf.argmax(y_conv, 1), tf.argmax(y_, 1))
   accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
+  print("Ready for training, start time counting")
+  # start time
+  start = time.time()
+  tbatch_prev = start
+  check_step = 1000
+  nepochs = 20000
+
   with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    for i in range(20000):
+    for i in range(nepochs):
       batch = mnist.train.next_batch(50)
-      if i % 100 == 0:
+      if i % check_step == 0:
+        tbatch = time.time()
         train_accuracy = accuracy.eval(feed_dict={
             x: batch[0], y_: batch[1], keep_prob: 1.0})
-        print('step %d, training accuracy %g' % (i, train_accuracy))
+        dtbatch = tbatch - tbatch_prev
+        trainspeed = check_step/dtbatch if dtbatch > 0. else 0.
+        print('step %d, training accuracy %g. %d batches trained in %gs, i.e. %g s/batch' % 
+             (i, train_accuracy, check_step, dtbatch, trainspeed))
+        print('')
+        tbatch_prev = time.time()
       train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
 
     print('test accuracy %g' % accuracy.eval(feed_dict={
         x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
-    print('calculated in %g s' % (time.time() - s))
+    print('calculated in %g s' % (time.time() - start))
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
