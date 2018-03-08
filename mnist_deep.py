@@ -137,7 +137,7 @@ def main(_):
   print("Ready for training, start time counting")
   # start time
   start = time.time()
-  tbatch_prev = start
+  tcheck_prev = start
   check_step = 1000
   nepochs = 20000
 
@@ -146,15 +146,15 @@ def main(_):
     for i in range(nepochs):
       batch = mnist.train.next_batch(50)
       if i % check_step == 0:
-        tbatch = time.time()
+        tcheck = time.time()
         train_accuracy = accuracy.eval(feed_dict={
             x: batch[0], y_: batch[1], keep_prob: 1.0})
-        dtbatch = tbatch - tbatch_prev
-        trainspeed = check_step/dtbatch if dtbatch > 0. else 0.
+        dtcheck = tcheck - tcheck_prev
+        t1batch = dtcheck/check_step
         print('step %d, training accuracy %g. %d batches trained in %gs, i.e. %g s/batch' % 
-             (i, train_accuracy, check_step, dtbatch, trainspeed))
+             (i, train_accuracy, check_step, dtcheck, t1batch))
         print('')
-        tbatch_prev = time.time()
+        tcheck_prev = time.time()
       train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
 
     print('test accuracy %g' % accuracy.eval(feed_dict={
