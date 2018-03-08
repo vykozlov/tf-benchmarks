@@ -150,16 +150,18 @@ def main(_):
         train_accuracy = accuracy.eval(feed_dict={
             x: batch[0], y_: batch[1], keep_prob: 1.0})
         dtcheck = tcheck - tcheck_prev
-        t1batch = dtcheck/check_step
-        print('step %d, training accuracy %g. %d batches trained in %gs, i.e. %g s/batch' % 
-             (i, train_accuracy, check_step, dtcheck, t1batch))
-        print('')
+        nbatches = check_step if i > 0 else 0
+        t1batch = dtcheck/float(nbatches) if nbatches > 0 else 0
+        print('step {0:6d}, training accuracy {1:5.3f} ({2:5d} batches trained in {3:6.4f} s, i.e. {4:9.07f} s/batch)'
+              .format(i, train_accuracy, nbatches, dtcheck, t1batch))
+        #print('(%d batches trained in %.4gs, i.e. %g s/batch)' % (nbatches, dtcheck, t1batch))
+        #print('')
         tcheck_prev = time.time()
       train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
 
     print('test accuracy %g' % accuracy.eval(feed_dict={
         x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
-    print('calculated in %g s' % (time.time() - start))
+    print('run in %g s' % (time.time() - start))
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
