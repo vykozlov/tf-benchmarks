@@ -1,9 +1,10 @@
-FROM nvidia/cuda:9.0-cudnn7-runtime-ubuntu16.04
+FROM nvidia/cuda:9.0-base-ubuntu16.04
+#FROM nvidia/cuda:9.0-cudnn7-runtime-ubuntu16.04
 
 LABEL maintainer="Valentin Kozlov <valentin.kozlov@kit.edu>"
 # Dockerfile based on the one for Tensorflow from Tensorflow:
 # https://github.com/tensorflow/tensorflow/tree/master/tensorflow/tools/docker
-# modified by Valentin Kozlov on 7-Feb-2018
+# modified by Valentin Kozlov on 21-Mar-2018
 
 # Pick up some TF dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -18,30 +19,38 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         rsync \
         software-properties-common \
         unzip \
-# for nvidia driver
-#        x11-common \
-#        dkms \
-#        acpid \
-#        lib32gcc1 \
-##        libgc6-386 \
-#        xserver-xorg-legacy \
-#        libwayland-client0 \
-#        libwayland-server0 \
-#        libx11-6 \
-#        libgl1 \
-#        xserver-xorg-core \
         && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY cuda-repo-ubuntu1604-9-0-local_9.0.176-1_amd64.deb /tmp/cuda-repo-ubuntu1604-9-0-local_9.0.176-1_amd64.deb
-RUN apt-get autoremove && dpkg --unpack /tmp/cuda-repo-ubuntu1604-9-0-local_9.0.176-1_amd64.deb && \
-    apt-key add /var/cuda-repo-9-0-local/7fa2af80.pub && apt-get update && \
+
+#ENV CUDA_VERSION="9.0.176"
+ENV CUDA_PKG_VERSION="9-0=9.0.176-1"
+ENV NVVERSION="384"
+ENV NVDRIVER="$NVVERSION.81-0ubuntu1"
+COPY 7fa2af80.pub /tmp/7fa2af80.pub
+RUN apt-key add /tmp/7fa2af80.pub && apt-get update && \
     mkdir /usr/lib/nvidia && \
-    DEBIAN_FRONTEND=noninteractive apt install -yq --no-install-recommends nvidia-384=384.81-0ubuntu1 && \
-#    dpkg -i /var/cuda-repo-9-0-local/nvidia-384_384.81-0ubuntu1_amd64.deb && \#
+#    apt remove -y libcudnn7 && \
+    DEBIAN_FRONTEND=noninteractive apt install -yq --allow-downgrades --no-install-recommends \
+        libcuda1-$NVVERSION=$NVDRIVER \
+        libcudnn7=7.0.5.15-1+cuda9.0 \
+        nvidia-$NVVERSION=$NVDRIVER \
+        cuda-nvrtc-$CUDA_PKG_VERSION \
+        cuda-nvgraph-$CUDA_PKG_VERSION \
+        cuda-cusolver-$CUDA_PKG_VERSION \
+        #cuda-cublas-9-0_9.0.176.2-1 \
+        cuda-cublas-$CUDA_PKG_VERSION \
+        cuda-cufft-$CUDA_PKG_VERSION \
+        cuda-curand-$CUDA_PKG_VERSION \
+        cuda-cusparse-$CUDA_PKG_VERSION \
+        cuda-npp-$CUDA_PKG_VERSION \
+        cuda-cudart-$CUDA_PKG_VERSION && \
+    ln -s cuda-9.0 /usr/local/cuda && \
     rm -rf /var/lib/apt/lists/* && \
-    rm -rf /tmp/cuda-repo-ubuntu1604-9-0-local_9.0.176-1_amd64.deb
+    rm -rf /var/cudo-repo-9-0-local/* && \
+    rm -rf /tmp/*
+#    apt-get -y autoremove
 
 RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
     python get-pip.py && \
@@ -69,7 +78,7 @@ RUN pip --no-cache-dir install \
 
 # Install TensorFlow GPU version.
 RUN pip --no-cache-dir install \
-    http://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-1.4.1-cp27-none-linux_x86_64.whl
+    http://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-1.5.0-cp27-none-linux_x86_64.whl
 # --- ~ DO NOT EDIT OR DELETE BETWEEN THE LINES --- #
 
 # RUN ln -s /usr/bin/python3 /usr/bin/python#
