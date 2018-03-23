@@ -24,15 +24,15 @@ HOSTNAME=$(hostname)
 DATENOW=$(date +%y%m%d_%H%M%S)
 echo "=> Running on $HOSTNAME on $DATENOW"
 LOGFILE=$DATENOW-$HOSTNAME-udocker.out
-#echo "=> Trying to pull the Docker Image, $DOCKERIMG"
-#udocker pull $DOCKERIMG
+echo "=> Trying to pull the Docker Image, $DOCKERIMG"
+udocker pull $DOCKERIMG
 
 UCONTAINER="tf$DOCKERTAG"
 UCONTAINER="${UCONTAINER//./}"
 echo "=> Trying to remove container if it is there"
-#udocker rm ${UCONTAINER}
+udocker rm ${UCONTAINER}
 echo "=> Creating Container"
-#udocker create --name=${UCONTAINER} ${DOCKERIMG}
+udocker create --name=${UCONTAINER} ${DOCKERIMG}
 
 echo $PATH
 echo $UDOCKER_DIR
