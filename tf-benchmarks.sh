@@ -60,7 +60,7 @@ fi
 TFTestLen=${#TFTest[@]}
 
 echo $INFOMESSAGE
-#pip install --user future
+pip install --user future
 PyVers=$(python --version 2>&1)
 TFVers=$(python $TFBenchmarks/tf_vers.py)
 echo "=> Python version: $PyVers"
