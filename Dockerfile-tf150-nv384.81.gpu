@@ -1,5 +1,4 @@
 FROM nvidia/cuda:9.0-base-ubuntu16.04
-#FROM nvidia/cuda:9.0-cudnn7-runtime-ubuntu16.04
 
 LABEL maintainer="Valentin Kozlov <valentin.kozlov@kit.edu>"
 # Dockerfile based on the one for Tensorflow from Tensorflow:
@@ -24,14 +23,21 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 
-#ENV CUDA_VERSION="9.0.176"
-ENV CUDA_PKG_VERSION="9-0=9.0.176-1"
+### copy from NVIDIA Dockerfile (runtime)
+RUN NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efacce4ab5 && \
+    NVIDIA_GPGKEY_FPR=ae09fe4bbd223a84b2ccfce3f60f4b3d7fa2af80 && \
+    apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub && \
+    apt-key adv --export --no-emit-version -a $NVIDIA_GPGKEY_FPR | tail -n +5 > cudasign.pub && \
+    echo "$NVIDIA_GPGKEY_SUM  cudasign.pub" | sha256sum -c --strict - && rm cudasign.pub && \
+    echo "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/cuda.list && \
+    echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list
+
+ENV CUDA_VERSION="9.0.176"
+ENV CUDA_PKG_VERSION="9-0=$CUDA_VERSION-1"
 ENV NVVERSION="384"
 ENV NVDRIVER="$NVVERSION.81-0ubuntu1"
-COPY 7fa2af80.pub /tmp/7fa2af80.pub
-RUN apt-key add /tmp/7fa2af80.pub && apt-get update && \
+RUN apt-get update && \
     mkdir /usr/lib/nvidia && \
-#    apt remove -y libcudnn7 && \
     DEBIAN_FRONTEND=noninteractive apt install -yq --allow-downgrades --no-install-recommends \
         libcuda1-$NVVERSION=$NVDRIVER \
         libcudnn7=7.0.5.15-1+cuda9.0 \
@@ -49,8 +55,8 @@ RUN apt-key add /tmp/7fa2af80.pub && apt-get update && \
     ln -s cuda-9.0 /usr/local/cuda && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/cudo-repo-9-0-local/* && \
-    rm -rf /tmp/*
-#    apt-get -y autoremove
+    rm -rf /tmp/* && \
+    apt-get -y autoremove
 
 RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
     python get-pip.py && \
@@ -70,16 +76,10 @@ RUN pip --no-cache-dir install \
         && \
     python -m ipykernel.kernelspec
 
-# --- DO NOT EDIT OR DELETE BETWEEN THE LINES --- #
-# These lines will be edited automatically by parameterized_docker_build.sh. #
-# COPY _PIP_FILE_ /
-# RUN pip --no-cache-dir install /_PIP_FILE_
-# RUN rm -f /_PIP_FILE_
 
-# Install TensorFlow GPU version.
+### Install TensorFlow GPU version.
 RUN pip --no-cache-dir install \
     http://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-1.5.0-cp27-none-linux_x86_64.whl
-# --- ~ DO NOT EDIT OR DELETE BETWEEN THE LINES --- #
 
 # RUN ln -s /usr/bin/python3 /usr/bin/python#
 
@@ -94,3 +94,4 @@ ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
 
 # Run app.py when the container launches
 CMD ["python", "benchmark_alexnet.py"]
+
