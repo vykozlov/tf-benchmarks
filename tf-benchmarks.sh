@@ -1,3 +1,4 @@
+#!/bin/bash
 ### SCRIPT MAIN CONFIG ###
 DIRINIMG=/home
 TFBenchmarks=$DIRINIMG/workspace/tf-benchmarks  # if container is used, this is directory INSIDE the container!
