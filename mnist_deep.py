@@ -139,12 +139,15 @@ def main(_):
   start = time.time()
   tcheck_prev = start
   check_step = 1000
-  nepochs = 20000
+  nepochs = 2 #0000
+  
+  global_step_tensor = tf.Variable(0, trainable=False, name='global_step')
 
   with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
     for i in range(nepochs):
       batch = mnist.train.next_batch(50)
+
       if i % check_step == 0:
         tcheck = time.time()
         train_accuracy = accuracy.eval(feed_dict={
@@ -154,14 +157,36 @@ def main(_):
         t1batch = dtcheck/float(nbatches) if nbatches > 0 else 0
         print('step {0:6d}, training accuracy {1:5.3f} ({2:5d} batches trained in {3:6.4f} s, i.e. {4:9.07f} s/batch)'
               .format(i, train_accuracy, nbatches, dtcheck, t1batch))
+        print("global step: ", tf.train.global_step(sess, global_step_tensor))
         #print('(%d batches trained in %.4gs, i.e. %g s/batch)' % (nbatches, dtcheck, t1batch))
         #print('')
         tcheck_prev = time.time()
-      train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+
+      run_metadata = tf.RunMetadata()
+      train_step_ = sess.run(train_step, feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5},
+			     options=tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE), run_metadata=run_metadata)
+	  
+      #-train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+      #train_step_ = sess.run(train_step, feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})	  
 
     print('test accuracy %g' % accuracy.eval(feed_dict={
         x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
     print('run in %g s' % (time.time() - start))
+
+    # Dump profiling data (*)
+    ProfileOptionBuilder = tf.profiler.ProfileOptionBuilder
+    opts = ProfileOptionBuilder(ProfileOptionBuilder.time_and_memory()).with_node_names().build()
+    
+    tf.profiler.profile(tf.get_default_graph(),
+			run_meta=run_metadata,
+			cmd='code',
+			options=opts)
+
+#    prof_timeline = tf.python.client.timeline.Timeline(run_metadata.step_stats)
+#    prof_ctf = prof_timeline.generate_chrome_trace_format()
+#    with open('./prof_ctf.json', 'w') as fp:
+#        print("Dumped to prof_ctf.json")
+#        fp.write(prof_ctf)
 
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()

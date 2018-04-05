@@ -22,5 +22,9 @@ HOSTNAME=$(hostname)
 DATENOW=$(date +%y%m%d_%H%M%S)
 LOGFILE=$DATENOW-$HOSTNAME-singularity.out
 
-echo "=> Singularity image: $SINGULARITYIMG" >$LOGFILE
+echo "=> Running on $HOSTNAME on $DATENOW" >$LOGFILE
+echo "=> Info on the system:" >> $LOGFILE
+top -bn3 | head -n 5 >> $LOGFILE
+echo "" >> $LOGFILE
+echo "=> Singularity image: $SINGULARITYIMG" >>$LOGFILE
 singularity exec --home $HOSTDIR:$DIRINIMG $SINGULARITYIMG $SCRIPT >> $LOGFILE

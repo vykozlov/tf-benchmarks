@@ -2,9 +2,9 @@
 ### SCRIPT MAIN CONFIG ###
 DIRINIMG=/home
 TFBenchmarks=$DIRINIMG/workspace/tf-benchmarks  # if container is used, this is directory INSIDE the container!
-#TFBenchmarks="."
+#TFBenchmarks="$PROJECT/workspace/tf-benchmarks"
 USAGEMESSAGE="Usage: $0 {alexnet | googlenet | overfeat | vgg | mnist | all}"
-INFOMESSAGE="=> Should be now in the container"
+INFOMESSAGE="=> Should now process scripts"
 ##########################
 
 ### Check correctness of the script call ###

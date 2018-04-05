@@ -22,26 +22,31 @@ SCRIPT="$DIRINIMG/workspace/tf-benchmarks/tf-benchmarks.sh all"
 
 HOSTNAME=$(hostname)
 DATENOW=$(date +%y%m%d_%H%M%S)
-echo "=> Running on $HOSTNAME on $DATENOW"
 LOGFILE=$DATENOW-$HOSTNAME-udocker.out
-echo "=> Trying to pull the Docker Image, $DOCKERIMG"
+echo "=> Running on $HOSTNAME on $DATENOW" >$LOGFILE
+echo "=> Info on the system:" >> $LOGFILE
+top -bn3 | head -n 5 >> $LOGFILE
+echo "" >> $LOGFILE
+
+
+echo "=> Trying to pull the Docker Image, $DOCKERIMG" >> $LOGFILE
 udocker pull $DOCKERIMG
 
 UCONTAINER="tf$DOCKERTAG"
 UCONTAINER="${UCONTAINER//./}"
-echo "=> Trying to remove container if it is there"
+echo "=> Trying to remove container if it is there" >> $LOGFILE
 udocker rm ${UCONTAINER}
-echo "=> Creating Container"
+echo "=> Creating Container" >> $LOGFILE
 udocker create --name=${UCONTAINER} ${DOCKERIMG}
 
-echo $PATH
-echo $UDOCKER_DIR
-echo "---------------------"
+echo $PATH >> $LOGFILE
+echo $UDOCKER_DIR >> $LOGFILE
+echo "---------------------" >> $LOGFILE
 
-echo "=> Doing the setup"
+echo "=> Doing the setup" >> $LOGFILE
 udocker setup --execmode=F3 --nvidia ${UCONTAINER}
 
-echo "=> Docker image: $DOCKERIMG" >$LOGFILE
-echo "Running"
+echo "=> Docker image: $DOCKERIMG" >>$LOGFILE
+echo "=> Running" >> $LOGFILE
 
 udocker run -v $HOSTDIR:$DIRINIMG -w $DIRINIMG ${UCONTAINER} $SCRIPT >>$LOGFILE
