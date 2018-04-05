@@ -139,7 +139,13 @@ def main(_):
   start = time.time()
   tcheck_prev = start
   check_step = 1000
-  nepochs = 2 #0000
+  nepochs = FLAGS.max_epochs
+  
+  if FLAGS.with_profiling:
+	  nepochs = 2
+	  
+  if args["max_epochs"] > 0:
+	  nepochs = FLAGS.max_epochs
   
   global_step_tensor = tf.Variable(0, trainable=False, name='global_step')
 
@@ -162,25 +168,26 @@ def main(_):
         #print('')
         tcheck_prev = time.time()
 
-      run_metadata = tf.RunMetadata()
-      train_step_ = sess.run(train_step, feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5},
-			     options=tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE), run_metadata=run_metadata)
-	  
-      #-train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
-      #train_step_ = sess.run(train_step, feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})	  
+	  if FLAGS.with_profiling:
+		  run_metadata = tf.RunMetadata()
+		  train_step_ = sess.run(train_step, feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5},
+								 options=tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE), run_metadata=run_metadata)
+	  else:
+		  train_step_ = sess.run(train_step, feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+		  #-train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
 
     print('test accuracy %g' % accuracy.eval(feed_dict={
         x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0}))
     print('run in %g s' % (time.time() - start))
 
-    # Dump profiling data (*)
-    ProfileOptionBuilder = tf.profiler.ProfileOptionBuilder
-    opts = ProfileOptionBuilder(ProfileOptionBuilder.time_and_memory()).with_node_names().build()
-    
-    tf.profiler.profile(tf.get_default_graph(),
-			run_meta=run_metadata,
-			cmd='code',
-			options=opts)
+	# Dump profiling data (*)
+	if FLAGS.with_profiling:
+		ProfileOptionBuilder = tf.profiler.ProfileOptionBuilder
+		opts = ProfileOptionBuilder(ProfileOptionBuilder.time_and_memory()).with_node_names().build()
+		tf.profiler.profile(tf.get_default_graph(),
+							run_meta=run_metadata,
+							cmd='code',
+							options=opts)
 
 #    prof_timeline = tf.python.client.timeline.Timeline(run_metadata.step_stats)
 #    prof_ctf = prof_timeline.generate_chrome_trace_format()
@@ -193,5 +200,9 @@ if __name__ == '__main__':
   parser.add_argument('--data_dir', type=str,
                       default='/tmp/tensorflow/mnist/input_data',
                       help='Directory for storing input data')
+  parser.add_argument("--max_epochs", type=int, default=20000,
+		help="Number of epochs to train")
+  parser.add_argument("--with_profiling", type=bool, default=False,
+		help="(experimental) Enable profiling. If --max-epochs is not specified, only 2 epochs are processed!")
   FLAGS, unparsed = parser.parse_known_args()
   tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
