@@ -1,13 +1,13 @@
 #!/bin/bash
-### SCRIPT MAIN CONFIG ###
-DIRINIMG=/home
-TFBenchmarks=$DIRINIMG/workspace/tf-benchmarks  # if container is used, this is directory INSIDE the container!
-#TFBenchmarks="$PROJECT/workspace/tf-benchmarks"
-USAGEMESSAGE="Usage: $0 {alexnet | googlenet | overfeat | vgg | mnist | all}"
+###### SCRIPT MAIN CONFIG ######################
+#  normally you do not need to change anything #
+################################################
+USAGEMESSAGE="Usage: $0 {alexnet | googlenet | overfeat | vgg | mnist | all} datasetsdir"
 INFOMESSAGE="=> Should now process scripts"
-##########################
+SCRIPTDIR="$(dirname $0)"
+TFBenchmarks=$SCRIPTDIR
 
-### Check correctness of the script call ###
+## Check correctness of the script call #
 if [ $# -eq 0 ]; then
     arg="alexnet"
 elif [ $1 == "-h" ] || [ $1 == "--help" ]; then
@@ -15,11 +15,23 @@ elif [ $1 == "-h" ] || [ $1 == "--help" ]; then
     exit 1
 elif [ $# -eq 1 ]; then
     arg=$1
+elif [ $# -eq 2 ]; then
+    arg=$1
+    DATASETS=$2
 else
-    echo "Error! You cannot provide more than one argument to the script!"
+    echo "Error! You cannot provide more than two argument to the script!"
     echo $USAGEMESSAGE
     exit 2
 fi
+##
+
+if [ -n "$DATASETS" ]; then
+    MNISTDATA="--data_dir=$DATASETS/mnist/input_data"
+fi
+echo "Script: "$SCRIPTDIR
+echo "MNIST: "$MNISTDATA
+
+################################################
 
 ### Configure what to run ###
 # for CPU:
@@ -48,7 +60,7 @@ if [ "$arg" == "vgg" ] || [ "$arg" == "all" ]; then
 fi
 
 if [ "$arg" == "mnist" ] || [ "$arg" == "all" ]; then
-     TFTest[$idx]="$TFBenchmarks/mnist_deep.py --data_dir=$DIRINIMG/tmp/mnist/input_data"
+     TFTest[$idx]="$TFBenchmarks/mnist_deep.py $MNISTDATA"
      let idx+=1
 fi
 
