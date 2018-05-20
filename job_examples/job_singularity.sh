@@ -12,7 +12,7 @@
 
 ### SCRIPT MAIN SETUP ###
 HOSTDIR=$PROJECT
-SYSINFO=$HOSTDIR/workspace/tf-benchmarks/sysinfo.sh
+SYSINFO=$HOSTDIR/workspace/tf-benchmarks/tools/sysinfo.sh
 IMGPATH="$HOSTDIR/workspace/singularity-tests"
 SINGULARITYIMG="$IMGPATH/tensorflow-1.4.1-gpu-nv384.81.img"
 DIRINIMG="/home"

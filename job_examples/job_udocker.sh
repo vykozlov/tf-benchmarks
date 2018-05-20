@@ -10,47 +10,23 @@
 #
 ################
 
-### SCRIPT MAIN CONFIG ###
-DOCKERTAG="1.5.0-gpu"
-DOCKERIMG="tensorflow/tensorflow:$DOCKERTAG"
-#export DOCKERTAG="1.4.1-gpu-nv384.81"
-#export DOCKERIMG="vykozlov/tensorflow:$DOCKERTAG"
-HOSTDIR=$PROJECT   # directory at your host to mount inside the container.
-UDOCKER_DIR="$PROJECT/.udocker"  # udocker main directory.
+### MAIN CONFIG ###
+UCONTAINER="tf170-gpu"                 # container to run
+UDOCKER_DIR="$PROJECT/.udocker"        # udocker main directory.
 UDOCKERSETUP="--execmode=F3 --nvidia"  # udocker setup settings.
-SYSINFO=$HOSTDIR/workspace/tf-benchmarks/sysinfo.sh
-DIRINIMG=/home               # make it $HOSTDIR for bare-metal.
-SCRIPTDIR=$DIRINIMG/workspace/tf-benchmarks  # directory with tf-benchmark scripts. if container is used, this is directory INSIDE container!
-DATASETS=$DIRINIMG/datasets  # 'top' directory for datasets. e.g. MNIST is at $DATASETS/mnist/input_data.
-SCRIPTOPT="mnist $DATASETS"  # parameter for tf-benchmarks.sh : call either one neural net script or all scripts. Specify DATASETS directory.
-SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $SCRIPTOPT"
+HOSTDIR=$PROJECT                       # directory at your host to mount inside the container.
+DIRINIMG="/home"                       # directory inside container
+DATASETS=$DIRINIMG/datasets            # directory with datasets, e.g. for MNIST: $DATASETS/mnist/input_data
+SCRIPT="$DIRINIMG/workspace/tf-benchmarks/tf-benchmarks.sh mnist $DATASETS" # script to run
 ##########################
 
-HOSTNAME=$(hostname)
-DATENOW=$(date +%y%m%d_%H%M%S)
-LOGFILE=$DATENOW-$HOSTNAME-udocker.out
-echo "=> Running on $HOSTNAME on $DATENOW" >$LOGFILE
-SYSINFO >> $LOGFILE
-
-echo "=> Trying to pull the Docker Image, $DOCKERIMG" >> $LOGFILE
-udocker pull $DOCKERIMG
-
-UCONTAINER="tf$DOCKERTAG"
-UCONTAINER="${UCONTAINER//./}"
-echo "=> Trying to remove container if it is there" >> $LOGFILE
-udocker rm ${UCONTAINER}
-echo "=> Creating Container" >> $LOGFILE
-udocker create --name=${UCONTAINER} ${DOCKERIMG}
-
-echo $PATH >> $LOGFILE
-echo $UDOCKER_DIR >> $LOGFILE
-echo "---------------------" >> $LOGFILE
-
-echo "=> Doing the setup" >> $LOGFILE
+echo "=> Doing the setup"
 udocker setup $UDOCKERSETUP ${UCONTAINER}
 
-echo "=> Docker image: $DOCKERIMG" >>$LOGFILE
-echo "=> Running" >> $LOGFILE
+echo "==================================="
+echo "=> udocker container: $UCONTAINER"
+echo "=> Running on $(hostname) ..."
+echo "==================================="
 
 # For udocker debugging specify "udocker -D run " + the rest
-udocker run --volume=$HOSTDIR:$DIRINIMG --workdir=$DIRINIMG ${UCONTAINER} $SCRIPT >>$LOGFILE
+udocker run --volume=$HOSTDIR:$DIRINIMG --workdir=$DIRINIMG ${UCONTAINER} $SCRIPT

@@ -7,5 +7,5 @@ DATASETS=$HOSTDIR/datasets
 ###PBS -o $DATENOW_$HOSTNAME_$(JOBNAME).o$(JOBID)
 LOGFILE=$DATENOW-$HOSTNAME-anaconda2+tf.out
 echo "=> Running on $HOSTNAME on $DATENOW" >$LOGFILE
-TFBenchmarks/sysinfo.sh >> $LOGFILE
+TFBenchmarks/tools/sysinfo.sh >> $LOGFILE
 $TFBenchmarks/tf-benchmarks.sh all $DATASETS >> $LOGFILE
