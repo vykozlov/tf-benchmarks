@@ -1,11 +1,13 @@
 #!/bin/bash
 ###### SCRIPT MAIN CONFIG ######################
 #  normally you do not need to change anything #
+#  except TFBatchOpt                           #
 ################################################
 USAGEMESSAGE="Usage: $0 {alexnet | googlenet | overfeat | vgg | mnist | all} datasetsdir"
 INFOMESSAGE="=> Should now process scripts"
 SCRIPTDIR="$(dirname $0)"
 TFBenchmarks=$SCRIPTDIR
+TFBenchOpt="--num_batches=1000"
 
 ## Check correctness of the script call #
 if [ $# -eq 0 ]; then
@@ -28,8 +30,6 @@ fi
 if [ -n "$DATASETS" ]; then
     MNISTDATA="--data_dir=$DATASETS/mnist/input_data"
 fi
-echo "Script: "$SCRIPTDIR
-echo "MNIST: "$MNISTDATA
 
 ################################################
 
@@ -40,22 +40,22 @@ echo "MNIST: "$MNISTDATA
 unset TFTest
 idx=0
 if [ "$arg" == "alexnet" ]  || [ "$arg" == "all" ]; then
-     TFTest[$idx]="$TFBenchmarks/benchmark_alexnet.py"
+     TFTest[$idx]="$TFBenchmarks/benchmark_alexnet.py $TFBenchOpt"
      let idx+=1
 fi
 
 if [ "$arg" == "googlenet" ] || [ "$arg" == "all" ]; then
-     TFTest[$idx]="$TFBenchmarks/benchmark_googlenet.py"
+     TFTest[$idx]="$TFBenchmarks/benchmark_googlenet.py $TFBenchOpt"
      let idx+=1
 fi
 
 if [ "$arg" == "overfeat" ] || [ "$arg" == "all" ]; then
-     TFTest[$idx]="$TFBenchmarks/benchmark_overfeat.py" 
+     TFTest[$idx]="$TFBenchmarks/benchmark_overfeat.py $TFBenchOpt" 
      let idx+=1
 fi
 
 if [ "$arg" == "vgg" ] || [ "$arg" == "all" ]; then
-     TFTest[$idx]="$TFBenchmarks/benchmark_vgg.py"
+     TFTest[$idx]="$TFBenchmarks/benchmark_vgg.py $TFBenchOpt"
      let idx+=1
 fi
 
@@ -76,8 +76,10 @@ echo $INFOMESSAGE
 pip install --user future
 PyVers=$(python --version 2>&1)
 TFVers=$(python $TFBenchmarks/tf_vers.py)
+echo "=================================="
 echo "=> Python version: $PyVers"
 echo "=> Tensorflow version: $TFVers"
+echo "=================================="
 
 for (( i=0; i<${TFTestLen}; i++ ));
 do
