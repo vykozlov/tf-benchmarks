@@ -11,19 +11,19 @@
 ################
 
 ### SCRIPT MAIN CONFIG ###
-DOCKERTAG="1.5.0-gpu"
+DOCKERTAG="1.6.0-gpu"
 DOCKERIMG="tensorflow/tensorflow:$DOCKERTAG"
 #export DOCKERTAG="1.4.1-gpu-nv384.81"
 #export DOCKERIMG="vykozlov/tensorflow:$DOCKERTAG"
-HOSTDIR=$PROJECT   # directory at your host to mount inside the container.
-UDOCKER_DIR="$PROJECT/.udocker"  # udocker main directory.
+HOSTDIR=$PROJECT                  # directory at your host to mount inside the container.
+UDOCKER_DIR="$PROJECT/.udocker"   # udocker main directory.
 UDOCKERSETUP="--execmode=F3 --nvidia"  # udocker setup settings.
 SYSINFO=$HOSTDIR/workspace/tf-benchmarks/tools/sysinfo.sh
-DIRINIMG=/home               # make it $HOSTDIR for bare-metal.
-SCRIPTDIR=$DIRINIMG/workspace/tf-benchmarks  # directory with tf-benchmark scripts. if container is used, this is directory INSIDE container!
-DATASETS=$DIRINIMG/datasets  # 'top' directory for datasets. e.g. MNIST is at $DATASETS/mnist/input_data.
-SCRIPTOPT="alexnet $DATASETS"  # parameter for tf-benchmarks.sh : call either one neural net script or all scripts. Specify DATASETS directory.
-SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $SCRIPTOPT"
+DIRINIMG=/home                    # mount point inside container
+SCRIPTDIR=$DIRINIMG/workspace/tf-benchmarks  # directory with tf-benchmark scripts INSIDE container!
+TFBenchScript="all"               # TF benchmark script to run
+#TFBenchOpt="--num_batches=1000"  # parameters for TF benchmarks.sh, e.g. --num_batches=1000 or --data_format=NHWC
+SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $TFBenchScript $TFBenchOpt"
 ##########################
 
 HOSTNAME=$(hostname)
@@ -39,14 +39,7 @@ echo "---------------------" >> $LOGFILE
 
 ### UDOCKER SETUP
 echo "=> Trying to pull the Docker Image, $DOCKERIMG" >> $LOGFILE
-udocker pull $DOCKERIMG
-
-if !(udocker ps |grep "'$UCONTAINER'"); then
-    #echo "=> Trying to remove container if it is there" >> $LOGFILE
-    #udocker rm ${UCONTAINER}
-    echo "=> Creating Container" >> $LOGFILE
-    udocker create --name=${UCONTAINER} ${DOCKERIMG}
-fi
+$TFBenchmars/tools/udocker_pull.sh $DOCKERTAG >> $LOGFILE
 
 echo "=> Doing the setup" >> $LOGFILE
 udocker setup $UDOCKERSETUP ${UCONTAINER}

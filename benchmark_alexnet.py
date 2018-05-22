@@ -24,8 +24,8 @@ tf.app.flags.DEFINE_string('data_format', 'NCHW',
                            """)
 tf.app.flags.DEFINE_string('csv_file', '',
                            """File to output timing information to in csv
-                           format. If not file is passed in, csv file will
-                           not be cteated.
+                           format. If no file is passed in, csv file will
+                           not be created.
                            """)
 
 

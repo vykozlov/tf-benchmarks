@@ -1,14 +1,12 @@
 #!/bin/bash
 ###### SCRIPT MAIN CONFIG ######################
 #  normally you do not need to change anything #
-#  ..except TFBatchOpt                         #
 ################################################
-USAGEMESSAGE="Usage: $0 {alexnet | googlenet | overfeat | vgg | mnist | all} datasetsdir"
+USAGEMESSAGE="Usage: $0 {alexnet | googlenet | overfeat | vgg | mnist | all} benchmarkOptions"
 INFOMESSAGE="=> Should now process scripts"
 SCRIPTDIR="$(dirname $0)"
 TFBenchmarks=$SCRIPTDIR
-TFBenchOpt=""
-#TFBenchOpt="--num_batches=1000"
+DATASETS=$TFBenchmarks/datasets
 #TFBenchOpt="--data_format=NHWC"  # for CPU!
 
 ## Check correctness of the script call #
@@ -21,9 +19,9 @@ elif [ $# -eq 1 ]; then
     arg=$1
 elif [ $# -eq 2 ]; then
     arg=$1
-    DATASETS=$2
+    TFBenchOpt=$2  # read benchmark options as parameter #ToDo: different options for different scripts
 else
-    echo "Error! You cannot provide more than two argument to the script!"
+    echo "Error! You cannot provide more than two arguments for the script!"
     echo $USAGEMESSAGE
     exit 2
 fi

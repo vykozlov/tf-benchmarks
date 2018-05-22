@@ -11,10 +11,25 @@
 ################
 
 ### MAIN CONFIG ###
-DOCKERTAG="1.6.0-gpu"
-DOCKERIMG="tensorflow/tensorflow:$DOCKERTAG"
-#export DOCKERTAG="1.4.1-gpu-nv384.81"
-#export DOCKERIMG="vykozlov/tensorflow:$DOCKERTAG"
+DEFAULTTAG="1.6.0-gpu"
+DOCKERIMG="tensorflow/tensorflow"
+#DEFAULTTAG="1.4.1-gpu-nv384.81"
+#DOCKERIMG="vykozlov/tensorflow:$DOCKERTAG"
+
+if [ $# -eq 0 ]; then
+    DOCKERTAG=$DEFAULTTAG
+elif [ $# -eq 1 ]; then
+    DOCKERTAG=$1
+else
+    echo "#############################################################"
+    echo "#  ERROR! Wrong execution. Either run as"
+    echo "#  $> $0 DOCKERTAG (example: $0 1.6.0-gpu)"
+    echo "#  or just"
+    echo "#  $> $0 (default is set in $0, e.g. DEFAULTTAG=1.6.0-gpu)"
+    echo "#############################################################"
+    exit 1
+fi
+DOCKERIMG="$DOCKERIMG:$DOCKERTAG"
 UDOCKER_DIR="$PROJECT/.udocker"  # udocker main directory.
 ##########################
 

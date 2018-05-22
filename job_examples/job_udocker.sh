@@ -11,13 +11,14 @@
 ################
 
 ### MAIN CONFIG ###
-UCONTAINER="tf170-gpu"                 # container to run
+UCONTAINER="tf160-gpu"                 # container to use
 UDOCKER_DIR="$PROJECT/.udocker"        # udocker main directory.
 UDOCKERSETUP="--execmode=F3 --nvidia"  # udocker setup settings.
 HOSTDIR=$PROJECT                       # directory at your host to mount inside the container.
-DIRINIMG="/home"                       # directory inside container
-DATASETS=$DIRINIMG/datasets            # directory with datasets, e.g. for MNIST: $DATASETS/mnist/input_data
-SCRIPT="$DIRINIMG/workspace/tf-benchmarks/tf-benchmarks.sh mnist $DATASETS" # script to run
+DIRINIMG="/home"                       # mount point inside container
+TFBenchScript="all"                    # TF benchmark script to run
+#TFBenchOpt="--num_batches=1000"       # options for TFBenchmark scripts, e.g.: --num_batches=1000 or --data_format=NHWC (for CPU)
+SCRIPT="$DIRINIMG/workspace/tf-benchmarks/tf-benchmarks.sh $TFBenchScript $TFBenchOpt" # script to run
 ##########################
 
 echo "=> Doing the setup"

@@ -14,11 +14,12 @@
 HOSTDIR=$PROJECT
 SYSINFO=$HOSTDIR/workspace/tf-benchmarks/tools/sysinfo.sh
 IMGPATH="$HOSTDIR/workspace/singularity-tests"
-SINGULARITYIMG="$IMGPATH/tensorflow-1.4.1-gpu-nv384.81.img"
-DIRINIMG="/home"
+SINGULARITYIMG="$IMGPATH/tensorflow-1.5.0-gpu-nv384.81.img"
+DIRINIMG="/home"                               # mount point inside container
 SCRIPTDIR="$DIRINIMG/workspace/tf-benchmarks"
-DATASETS="$DIRINIMG/datasets"
-SCRIPT="$SCRIPTDIR/tf-benchmarks.sh all $DATASETS"
+TFBenchScript="all"                            # TF benchmark script to run
+#TFBenchOpt="--num_batches=1000"                # parameteres for TF scripts, e.g. --num_batches=1000 or --data_format=NHWC (for CPU)
+SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $TFBenchScript $TFBenchOpt"
 #########################
 
 HOSTNAME=$(hostname)
