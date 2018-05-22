@@ -11,7 +11,7 @@
 ################
 
 ### MAIN CONFIG ###
-DOCKERTAG="1.5.0-gpu"
+DOCKERTAG="1.6.0-gpu"
 DOCKERIMG="tensorflow/tensorflow:$DOCKERTAG"
 #export DOCKERTAG="1.4.1-gpu-nv384.81"
 #export DOCKERIMG="vykozlov/tensorflow:$DOCKERTAG"

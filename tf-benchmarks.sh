@@ -1,13 +1,15 @@
 #!/bin/bash
 ###### SCRIPT MAIN CONFIG ######################
 #  normally you do not need to change anything #
-#  except TFBatchOpt                           #
+#  ..except TFBatchOpt                         #
 ################################################
 USAGEMESSAGE="Usage: $0 {alexnet | googlenet | overfeat | vgg | mnist | all} datasetsdir"
 INFOMESSAGE="=> Should now process scripts"
 SCRIPTDIR="$(dirname $0)"
 TFBenchmarks=$SCRIPTDIR
-TFBenchOpt="--num_batches=1000"
+TFBenchOpt=""
+#TFBenchOpt="--num_batches=1000"
+#TFBenchOpt="--data_format=NHWC"  # for CPU!
 
 ## Check correctness of the script call #
 if [ $# -eq 0 ]; then
@@ -34,9 +36,6 @@ fi
 ################################################
 
 ### Configure what to run ###
-# for CPU:
-#TFTest="/home/user/workspace/tf-benchmarks/benchmark_alexnet.py --data_format=NHWC"
-# for GPU:
 unset TFTest
 idx=0
 if [ "$arg" == "alexnet" ]  || [ "$arg" == "all" ]; then
@@ -75,7 +74,7 @@ TFTestLen=${#TFTest[@]}
 echo $INFOMESSAGE
 pip install --user future
 PyVers=$(python --version 2>&1)
-TFVers=$(python $TFBenchmarks/tf_vers.py)
+TFVers=$(python $TFBenchmarks/tools/tf_vers.py)
 echo "=================================="
 echo "=> Python version: $PyVers"
 echo "=> Tensorflow version: $TFVers"
