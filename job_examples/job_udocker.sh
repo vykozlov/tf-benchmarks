@@ -1,8 +1,7 @@
 #!/bin/bash
 ##### INFO ######
 # This script supposes to:
-# 1. download a Docker image (Tensorflow)
-# 2. run benchmarks inside the container by means of udocker
+# 1. run TensorFlow benchmarks inside the container by means of udocker
 #
 # VKozlov @23-Mar-2018
 #
