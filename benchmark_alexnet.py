@@ -128,12 +128,9 @@ def time_tensorflow_run(session, target, info_string):
   num_steps_burn_in = 10
   total_duration = 0.0
   total_duration_squared = 0.0
-  if not isinstance(target, list):
-    target = [target]
-  target_op = tf.group(*target)
   for i in range(FLAGS.num_batches + num_steps_burn_in):
     start_time = time.time()
-    _ = session.run(target_op)
+    _ = session.run(target)  #target_op = tf.group(*target)
     duration = time.time() - start_time
     if i > num_steps_burn_in:
       if not i % 10:
@@ -149,7 +146,7 @@ def time_tensorflow_run(session, target, info_string):
   return TimingEntry(info_string, datetime.now(), FLAGS.num_batches, mn, sd)
 
 def store_data_in_csv(timing_entries):
-  with open(FLAGS.csv_file, 'wb') as csvfile:
+  with open(FLAGS.csv_file, 'wb+') as csvfile:
     writer = csv.writer(csvfile)
     for timing_entry in timing_entries:
       writer.writerow(
