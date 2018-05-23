@@ -11,22 +11,24 @@
 #  --csv_file     File to output script results and information
 #
 #  for mnist_deep.py:
-#  --data_dir     Directory with MNIST input data
-#  --max_epochs   Number of epochs to train
+#  --data_dir       Directory with MNIST input data
+#  --mnist_batch    Batch size
+#  --mnist_epochs   Number of epochs to train
 #  --csv_file (same as for benchmark_xxx.py)
 ################################################
 USAGEMESSAGE="Usage: $0 {alexnet | googlenet | overfeat | vgg | mnist | all} options \n
               where options are: \n
                 for benchmark_xxx.py scripts: \n
-                --batch_size   Batch size \n
-                --num_bathces  Number of batches to run \n
-                --data_format  The data format for ConvNet operations. Can be either NHWC (CPU) or NCHW (default) \n
-                --csv_file     File (.csv) to output script results and information \n\n
+                --batch_size    Batch size \n
+                --num_bathces   Number of batches to run \n
+                --data_format   The data format for ConvNet operations. Can be either NHWC (CPU) or NCHW (default) \n
+                --csv_file      File (.csv) to output script results and information \n\n
 
                 for mnist_deep.py: \n
-                --data_dir     Directory with MNIST input data \n
-                --max_epochs   Number of epochs to train \n
-                --csv_file     Same as for benchmark_xxx.py)"
+                --data_dir      Directory with MNIST input data \n
+                --mnist_batch   Batch size \n
+                --mnist_epochs  Number of epochs to train \n
+                --csv_file      Same as for benchmark_xxx.py)"
 INFOMESSAGE="=> Should now process scripts"
 SCRIPTDIR="$(dirname $0)"
 TFBenchmarks=$SCRIPTDIR
@@ -45,7 +47,7 @@ elif [ $1 == "-h" ] || [ $1 == "--help" ]; then
     exit 1
 elif [ $# -eq 1 ]; then
     net=$1
-elif [ $# -ge 2 ] && [ $# -le 7 ]; then
+elif [ $# -ge 2 ] && [ $# -le 8 ]; then
     net=$1
     # read benchmark options as parameters
     for i in "${arr[@]}"; do
@@ -53,8 +55,9 @@ elif [ $# -ge 2 ] && [ $# -le 7 ]; then
         [[ $i = *"--num_batches"* ]] && TFNumBatchesOpt=$i && TFNumBatches=${i#*=} && TFBenchOpts=$TFBenchOpts" $i"
         [[ $i = *"--data_format"* ]] && TFDataFormatOpt=$i && TFDataFormat=${i#*=} && TFBenchOpts=$TFBenchOpts" $i"       
         [[ $i = *"--csv_file"* ]]    && CsvFileOpt=$i && CsvFile=${i#*=} && TFBenchOpts=$TFBenchOpts" $i" && MNISTOpts=$MNISTOpts" $i"
-        [[ $i = *"--data_dir"* ]]    && MNISTDataDirOpt=$i && MNISTData=${i#*=}    && MNISTOpts=$MNISTOpts" $i"
-        [[ $i = *"--max_epochs"* ]]  && MNISTMaxEpochsOpt=$i && MNISTMaxEpochs=${i#*=} && MNISTOpts=$MNISTOpts" $i"
+        [[ $i = *"--data_dir"* ]]      && MNISTDataDirOpt=$i   && MNISTData=${i#*=}      && MNISTOpts=$MNISTOpts" $i"
+        [[ $i = *"--mnist_batch"* ]]   && MNISTBatchSizeOpt=$i && MNISTBatchSize=${i#*=} && MNISTOpts=$MNISTOpts" $i"        
+        [[ $i = *"--mnist_epochs"* ]]  && MNISTEpochsOpt=$i    && MNISTEpochs=${i#*=}    && MNISTOpts=$MNISTOpts" $i"
     done
 else
     echo "ERROR! Too many arguments provided!"
