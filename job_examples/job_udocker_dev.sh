@@ -28,8 +28,8 @@ LOGFILE=$DATENOW-$HOSTNAME-udocker-$UCONTAINER
 DIRINIMG=/home                    # mount point inside container
 SCRIPTDIR=$DIRINIMG/workspace/tf-benchmarks  # directory with tf-benchmark scripts INSIDE container!
 TFBenchScript="all"               # TF benchmark script to run
-TFBenchOpt="--csv_file=$LOGFILE.csv"  # parameters for TF benchmarks.sh, e.g. --num_batches=1000 or --data_format=NHWC
-SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $TFBenchScript $TFBenchOpt"
+TFBenchOpts="--csv_file=$LOGFILE.csv"  # parameters for TF benchmarks.sh, e.g. --num_batches=1000 or --data_format=NHWC
+SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $TFBenchScript $TFBenchOpts"
 ##########################
 
 LOGFILE="$LOGFILE.out"

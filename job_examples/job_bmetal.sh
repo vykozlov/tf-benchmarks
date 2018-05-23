@@ -9,8 +9,8 @@ HOSTDIR=$PROJECT
 LOGFILE=$DATENOW-$HOSTNAME-anaconda2+tf
 TFBenchmarks=$HOSTDIR/workspace/tf-benchmarks
 TFBenchScript="all"                    # TF Script to run
-TFBenchOpt="--csv_file=$LOGFILE.csv"   # parameters for TF scripts, e.g. --num_batches=1000 or --data_format=NHWC (for CPU)
+TFBenchOpts="--csv_file=$LOGFILE.csv"   # parameters for TF scripts, e.g. --num_batches=1000 or --data_format=NHWC (for CPU)
 LOGFILE="$LOGFILE.out"
 echo "=> Running on $HOSTNAME on $DATENOW" >$LOGFILE
 TFBenchmarks/tools/sysinfo.sh >> $LOGFILE
-$TFBenchmarks/tf-benchmarks.sh $TFBenchScript $TFBenchOpt >> $LOGFILE
+$TFBenchmarks/tf-benchmarks.sh $TFBenchScript $TFBenchOpts >> $LOGFILE

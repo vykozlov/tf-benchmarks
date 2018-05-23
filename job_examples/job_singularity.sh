@@ -22,8 +22,8 @@ LOGFILE=$DATENOW-$HOSTNAME-singularity
 DIRINIMG="/home"                               # mount point inside container
 SCRIPTDIR="$DIRINIMG/workspace/tf-benchmarks"
 TFBenchScript="all"                            # TF benchmark script to run
-TFBenchOpt="--csv_file=$LOGFILE.csv"                # parameteres for TF scripts, e.g. --num_batches=1000 or --data_format=NHWC (for CPU)
-SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $TFBenchScript $TFBenchOpt"
+TFBenchOpts="--csv_file=$LOGFILE.csv"                # parameteres for TF scripts, e.g. --num_batches=1000 or --data_format=NHWC (for CPU)
+SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $TFBenchScript $TFBenchOpts"
 #########################
 
 

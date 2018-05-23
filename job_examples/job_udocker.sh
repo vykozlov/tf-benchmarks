@@ -20,8 +20,8 @@ HOSTDIR=$PROJECT                       # directory at your host to mount inside 
 DIRINIMG="/home"                       # mount point inside container
 TFBenchScript="all"                    # TF benchmark script to run
 CSVFILE="$DATENOW-$HOSTNAME-udocker-$UCONTAINER.csv"
-TFBenchOpt="--csv_file=$CSVFILE"       # options for TFBenchmark scripts, e.g.: --num_batches=1000 or --data_format=NHWC (for CPU)
-SCRIPT="$DIRINIMG/workspace/tf-benchmarks/tf-benchmarks.sh $TFBenchScript $TFBenchOpt" # script to run
+TFBenchOpts="--csv_file=$CSVFILE"       # options for TFBenchmark scripts, e.g.: --num_batches=1000 or --data_format=NHWC (for CPU)
+SCRIPT="$DIRINIMG/workspace/tf-benchmarks/tf-benchmarks.sh $TFBenchScript $TFBenchOpts" # script to run
 ###########################
 
 echo "=> Doing the setup"
