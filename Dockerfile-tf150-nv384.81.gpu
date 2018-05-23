@@ -5,8 +5,21 @@ LABEL maintainer="Valentin Kozlov <valentin.kozlov@kit.edu>"
 # https://github.com/tensorflow/tensorflow/tree/master/tensorflow/tools/docker
 # modified by Valentin Kozlov on 21-Mar-2018
 
+ENV CUDA_VERSION="9.0.176"
+ENV CUDA_PKG_VERSION="9-0=$CUDA_VERSION-1"
+ENV NVVERSION="384"
+ENV NVDRIVER="$NVVERSION.81-0ubuntu1"
+
+### copy from NVIDIA Dockerfile (runtime)
+RUN NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efacce4ab5 && \
+    NVIDIA_GPGKEY_FPR=ae09fe4bbd223a84b2ccfce3f60f4b3d7fa2af80 && \
+    apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub && \
+    apt-key adv --export --no-emit-version -a $NVIDIA_GPGKEY_FPR | tail -n +5 > cudasign.pub && \
+    echo "$NVIDIA_GPGKEY_SUM  cudasign.pub" | sha256sum -c --strict - && rm cudasign.pub && \
+    echo "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/cuda.list && \
+    echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list && \
 # Pick up some TF dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+    apt-get update && apt-get install -y --no-install-recommends \
         build-essential \
         curl \
         libfreetype6-dev \
@@ -19,24 +32,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         software-properties-common \
         unzip \
         && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-
-### copy from NVIDIA Dockerfile (runtime)
-RUN NVIDIA_GPGKEY_SUM=d1be581509378368edeec8c1eb2958702feedf3bc3d17011adbf24efacce4ab5 && \
-    NVIDIA_GPGKEY_FPR=ae09fe4bbd223a84b2ccfce3f60f4b3d7fa2af80 && \
-    apt-key adv --fetch-keys http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64/7fa2af80.pub && \
-    apt-key adv --export --no-emit-version -a $NVIDIA_GPGKEY_FPR | tail -n +5 > cudasign.pub && \
-    echo "$NVIDIA_GPGKEY_SUM  cudasign.pub" | sha256sum -c --strict - && rm cudasign.pub && \
-    echo "deb http://developer.download.nvidia.com/compute/cuda/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/cuda.list && \
-    echo "deb http://developer.download.nvidia.com/compute/machine-learning/repos/ubuntu1604/x86_64 /" > /etc/apt/sources.list.d/nvidia-ml.list
-
-ENV CUDA_VERSION="9.0.176"
-ENV CUDA_PKG_VERSION="9-0=$CUDA_VERSION-1"
-ENV NVVERSION="384"
-ENV NVDRIVER="$NVVERSION.81-0ubuntu1"
-RUN apt-get update && \
+    apt-get update && \
     mkdir /usr/lib/nvidia && \
     DEBIAN_FRONTEND=noninteractive apt install -yq --allow-downgrades --no-install-recommends \
         libcuda1-$NVVERSION=$NVDRIVER \
@@ -56,13 +52,13 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/cudo-repo-9-0-local/* && \
     rm -rf /tmp/* && \
-    apt-get -y autoremove
-
-RUN curl -O https://bootstrap.pypa.io/get-pip.py && \
+    apt-get -y autoremove && \
+    apt-get clean && \
+# python
+    curl -O https://bootstrap.pypa.io/get-pip.py && \
     python get-pip.py && \
-    rm get-pip.py
-
-RUN pip --no-cache-dir install \
+    rm get-pip.py && \
+    pip --no-cache-dir install \
         Pillow \
         h5py \
         ipykernel \
@@ -74,12 +70,14 @@ RUN pip --no-cache-dir install \
         sklearn \
 	future \
         && \
-    python -m ipykernel.kernelspec
-
-
+    python -m ipykernel.kernelspec && \
 ### Install TensorFlow GPU version.
-RUN pip --no-cache-dir install \
-    http://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-1.5.0-cp27-none-linux_x86_64.whl
+    pip --no-cache-dir install \
+    http://storage.googleapis.com/tensorflow/linux/gpu/tensorflow_gpu-1.5.0-cp27-none-linux_x86_64.whl && \
+    apt-get -y remove python-dev && \
+    apt-get -y autoremove && \
+    apt-get clean && \
+    rm -rf /tmp/*
 
 # RUN ln -s /usr/bin/python3 /usr/bin/python#
 
