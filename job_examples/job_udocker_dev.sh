@@ -23,16 +23,22 @@ UDOCKER_DIR="$PROJECT/.udocker"   # udocker main directory.
 UDOCKERSETUP="--execmode=F3 --nvidia"  # udocker setup settings.
 UCONTAINER="tf$DOCKERTAG"
 UCONTAINER="${UCONTAINER//./}"
-SYSINFO=$HOSTDIR/workspace/tf-benchmarks/tools/sysinfo.sh
-LOGFILE=$DATENOW-$HOSTNAME-udocker-$UCONTAINER
+TFBenchmarks=$HOSTDIR/workspace/tf-benchmarks
+SYSINFO=$TFBenchmarks/tools/sysinfo.sh
+LOGNAME=$DATENOW-$HOSTNAME-udocker-$UCONTAINER
+CSVFILE="$LOGNAME.csv"
 DIRINIMG=/home                    # mount point inside container
 SCRIPTDIR=$DIRINIMG/workspace/tf-benchmarks  # directory with tf-benchmark scripts INSIDE container!
 TFBenchScript="all"               # TF benchmark script to run
-TFBenchOpts="--csv_file=$LOGFILE.csv"  # parameters for TF benchmarks.sh, e.g. --num_batches=1000 or --data_format=NHWC
+TFBenchOpts="--csv_file=$CSVFILE.csv"  # parameters for TF benchmarks.sh, e.g. --num_batches=1000 or --data_format=NHWC
 SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $TFBenchScript $TFBenchOpts"
 ##########################
 
-LOGFILE="$LOGFILE.out"
+if [ -n $CSVFILE ]; then
+    $($TFBenchmarks/tools/gitinfo.sh >> $CSVFILE)
+fi
+
+LOGFILE="$LOGNAME.out"
 echo "=> Running on $HOSTNAME on $DATENOW" >$LOGFILE
 $SYSINFO >> $LOGFILE
 echo $PATH >> $LOGFILE

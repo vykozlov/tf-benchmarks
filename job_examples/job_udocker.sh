@@ -17,12 +17,17 @@ UCONTAINER="tf160-gpu"                 # container to use
 UDOCKER_DIR="$PROJECT/.udocker"        # udocker main directory.
 UDOCKERSETUP="--execmode=F3 --nvidia"  # udocker setup settings.
 HOSTDIR=$PROJECT                       # directory at your host to mount inside the container.
+TFBenchmarks=$HOSTDIR/workspace/tf-benchmarks
 DIRINIMG="/home"                       # mount point inside container
 TFBenchScript="all"                    # TF benchmark script to run
 CSVFILE="$DATENOW-$HOSTNAME-udocker-$UCONTAINER.csv"
 TFBenchOpts="--csv_file=$CSVFILE"       # options for TFBenchmark scripts, e.g.: --num_batches=1000 or --data_format=NHWC (for CPU)
 SCRIPT="$DIRINIMG/workspace/tf-benchmarks/tf-benchmarks.sh $TFBenchScript $TFBenchOpts" # script to run
 ###########################
+
+if [ -n $CSVFILE ]; then
+    $($TFBenchmarks/tools/gitinfo.sh >> $CSVFILE)
+fi
 
 echo "=> Doing the setup"
 udocker setup $UDOCKERSETUP ${UCONTAINER}

@@ -7,7 +7,7 @@ import time
 
 import tensorflow.python.platform
 import tensorflow as tf
-import tools.store_in_csv as incsv
+import tools.storeincsv as incsv
 
 FLAGS = tf.app.flags.FLAGS
 

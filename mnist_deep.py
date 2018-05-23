@@ -36,7 +36,7 @@ from tensorflow.examples.tutorials.mnist import input_data
 import tensorflow as tf
 from collections import namedtuple
 from datetime import datetime
-import tools.store_in_csv as incsv
+import tools.storeincsv as incsv
 
 FLAGS = None
 

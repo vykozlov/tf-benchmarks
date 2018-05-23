@@ -109,19 +109,16 @@ echo $INFOMESSAGE
 pip install --user future
 PyVers=$(python --version 2>&1)
 TFVers=$(python $TFBenchmarks/tools/tf_vers.py)
-GitInfo=$($TFBenchmarks/tools/gitinfo.sh)
 echo "=================================="
 echo "=> Python version: $PyVers"
 echo "=> Tensorflow version: $TFVers"
-echo "=> GitInfo:"
-echo "$GitInfo"
 echo "=================================="
 if [ -n $CsvFile ]; then
    echo "Python, $PyVers" >> $CsvFile
    echo "TensorFlow, $TFVers" >> $CsvFile
-   echo "$GitInfo" >> $CsvFile
 fi
 
+export PYTHONPATH=$PYTHONPATH:$TFBenchmarks
 for (( i=0; i<${TFTestLen}; i++ ));
 do
     echo "=> Execute: ${TFTest[$i]}"
