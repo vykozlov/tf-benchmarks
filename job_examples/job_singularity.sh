@@ -10,22 +10,24 @@
 #
 ################
 
+HOSTNAME=$(hostname)
+DATENOW=$(date +%y%m%d_%H%M%S)
+
 ### SCRIPT MAIN SETUP ###
 HOSTDIR=$PROJECT
-SYSINFO=$HOSTDIR/workspace/tf-benchmarks/tools/sysinfo.sh
 IMGPATH="$HOSTDIR/workspace/singularity-tests"
 SINGULARITYIMG="$IMGPATH/tensorflow-1.5.0-gpu-nv384.81.img"
+SYSINFO=$HOSTDIR/workspace/tf-benchmarks/tools/sysinfo.sh
+LOGFILE=$DATENOW-$HOSTNAME-singularity
 DIRINIMG="/home"                               # mount point inside container
 SCRIPTDIR="$DIRINIMG/workspace/tf-benchmarks"
 TFBenchScript="all"                            # TF benchmark script to run
-#TFBenchOpt="--num_batches=1000"                # parameteres for TF scripts, e.g. --num_batches=1000 or --data_format=NHWC (for CPU)
+TFBenchOpt="--csv_file=$LOGFILE.csv"                # parameteres for TF scripts, e.g. --num_batches=1000 or --data_format=NHWC (for CPU)
 SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $TFBenchScript $TFBenchOpt"
 #########################
 
-HOSTNAME=$(hostname)
-DATENOW=$(date +%y%m%d_%H%M%S)
-LOGFILE=$DATENOW-$HOSTNAME-singularity.out
 
+LOGFILE="$LOGFILE.out"
 echo "=> Running on $HOSTNAME on $DATENOW" >$LOGFILE
 $SYSINFO >> $LOGFILE
 echo "=> Singularity image: $SINGULARITYIMG" >>$LOGFILE
