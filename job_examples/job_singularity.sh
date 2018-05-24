@@ -40,4 +40,4 @@ LOGFILE="$LOGDIRHost/$LOGNAME.out"
 echo "=> Running on $HOSTNAME on $DATENOW" >$LOGFILE
 $SYSINFO >> $LOGFILE
 echo "=> Singularity image: $SINGULARITYIMG" >>$LOGFILE
-singularity exec --home $HOSTDIR:$DIRINIMG $SINGULARITYIMG $SCRIPT >> $LOGFILE
+singularity exec --home $HOSTDIR:$DIRINCONTAINER $SINGULARITYIMG $SCRIPT >> $LOGFILE

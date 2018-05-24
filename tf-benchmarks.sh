@@ -55,8 +55,8 @@ elif [ $# -ge 2 ] && [ $# -le 8 ]; then
         [[ $i = *"--num_batches"* ]] && TFNumBatchesOpt=$i && TFNumBatches=${i#*=} && TFBenchOpts=$TFBenchOpts" $i"
         [[ $i = *"--data_format"* ]] && TFDataFormatOpt=$i && TFDataFormat=${i#*=} && TFBenchOpts=$TFBenchOpts" $i"       
         [[ $i = *"--csv_file"* ]]    && CsvFileOpt=$i && CsvFile=${i#*=} && TFBenchOpts=$TFBenchOpts" $i" && MNISTOpts=$MNISTOpts" $i"
-        [[ $i = *"--data_dir"* ]]      && MNISTDataDirOpt=$i   && MNISTData=${i#*=}      && MNISTOpts=$MNISTOpts" $i"
-        [[ $i = *"--mnist_batch"* ]]   && MNISTBatchSizeOpt=$i && MNISTBatchSize=${i#*=} && MNISTOpts=$MNISTOpts" $i"        
+        [[ $i = *"--data_dir"* ]]      && MNISTDataDirOpt=$i   && MNISTData=${i#*=}
+        [[ $i = *"--mnist_batch"* ]]   && MNISTBatchSizeOpt=$i && MNISTBatchSize=${i#*=} && MNISTOpts=$MNISTOpts" $i"
         [[ $i = *"--mnist_epochs"* ]]  && MNISTEpochsOpt=$i    && MNISTEpochs=${i#*=}    && MNISTOpts=$MNISTOpts" $i"
     done
 else
@@ -65,6 +65,10 @@ else
     echo $USAGEMESSAGE
     exit 2
 fi
+
+# MNISTData either default or re-defined, added at the end
+MNISTOpts=$MNISTOpts" $MNISTData
+"
 ##
 ################################################
 
@@ -118,7 +122,6 @@ if [ -n $CsvFile ]; then
    echo "TensorFlow, $TFVers" >> $CsvFile
 fi
 
-export PYTHONPATH=$PYTHONPATH:$TFBenchmarks
 for (( i=0; i<${TFTestLen}; i++ ));
 do
     echo "=> Execute: ${TFTest[$i]}"

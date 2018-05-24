@@ -47,11 +47,11 @@ echo "=> Running on $HOSTNAME on $DATENOW" >$LOGFILE
 $SYSINFO >> $LOGFILE
 echo $PATH >> $LOGFILE
 echo $UDOCKER_DIR >> $LOGFILE
-echo "---------------------" >> $LOGFILE
+echo "----------------------------" >> $LOGFILE
 
 ### UDOCKER SETUP
 echo "=> Trying to pull the Docker Image, $DOCKERIMG" >> $LOGFILE
-$TFBenchmars/tools/udocker_pull.sh $DOCKERTAG >> $LOGFILE
+$TFBenchmarksHost/tools/udocker_pull.sh $DOCKERTAG >> $LOGFILE
 
 echo "=> Doing the setup" >> $LOGFILE
 udocker setup $UDOCKERSETUP ${UCONTAINER}
@@ -59,5 +59,8 @@ udocker setup $UDOCKERSETUP ${UCONTAINER}
 echo "=> Docker image: $DOCKERIMG" >>$LOGFILE
 echo "=> Running" >> $LOGFILE
 
+echo "========= git info ==========" >> $LOGFILE
+$TFBenchmarksHost/tools/gitinfo.sh  >> $LOGFILE
+echo "=============================" >> $LOGFILE
 # For udocker debugging specify "udocker -D run " + the rest
-udocker run --volume=$HOSTDIR:$DIRINIMG --workdir=$DIRINIMG ${UCONTAINER} $SCRIPT >>$LOGFILE
+udocker run --volume=$HOSTDIR:$DIRINCONTAINER --workdir=$DIRINCONTAINER ${UCONTAINER} $SCRIPT >>$LOGFILE
