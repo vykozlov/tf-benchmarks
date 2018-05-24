@@ -5,5 +5,4 @@ def store_data_in_csv(csv_file, param_entries):
         writer = csv.writer(csvfile)
         writer.writerow("")
         for param_entry in param_entries:
-            writer.writerow(
-                param_entry[i] for i in range(len(param_entry)) )
+            writer.writerow(param_entry)
