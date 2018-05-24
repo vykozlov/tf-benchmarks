@@ -41,7 +41,7 @@ import tools.storeincsv as incsv
 
 FLAGS = None
 
-ParamHeader = ['Timestamp', 'Script', 'Info', 'Batch_size', 'Num_steps', 'TestAccuracy', 'TotalTime', 'MeanPerBatch', 'StDev']
+ParamHeader = ['Timestamp', 'Script', 'Info', 'Batch_size', 'Num_steps', 'TestAccuracy', 'TotalTime', 'TestTime', 'TrainTime', 'MeanPerBatch', 'StDev']
 ParamEntry = namedtuple('ParamEntry', ParamHeader)
 
 def deepnn(x):
@@ -164,50 +164,62 @@ def main(_):
   print("Ready for training, start time counting")
   # start time
   start = time.time()
-  tcheck_prev = start
 
-  total_duration = 0.0
-  total_duration_squared = 0.0
+  train_duration = 0.0
+  train_duration_squared = 0.0
+  check_duration = 0.0
+  
   with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
+    batch0 = mnist.train.next_batch(mnist_batchsize) # for burn_in we can use a fixed batch
     for i in range(mnist_steps + num_steps_burn_in):
-      batch = mnist.train.next_batch(mnist_batchsize)
+      if (i == num_steps_burn_in):
+          burn_in_end = time.time()
+          tcheck_prev = burn_in_end
+          
+      batch = mnist.train.next_batch(mnist_batchsize) if (i >= num_steps_burn_in) else batch0
 
-      if (i - num_steps_burn_in) % check_step == 0:
+      if (i >= num_steps_burn_in) and (i - num_steps_burn_in) % check_step == 0 :
         tcheck = time.time()
-        train_accuracy = accuracy.eval(feed_dict={x: batch[0], y_: batch[1], keep_prob: 1.0})
+        train_accuracy = accuracy.eval(feed_dict={x: batch[0], y_: batch[1], keep_prob: 1.0}) 
         dtcheck = tcheck - tcheck_prev
-        nbatches = check_step if i > 0 else 0
+        nbatches = check_step if (i - num_steps_burn_in) > 0 else 0
         t1batch = dtcheck/float(nbatches) if nbatches > 0 else 0
         print('step {0:6d}, training accuracy {1:5.3f} ({2:5d} batches trained in {3:6.4f} s, i.e. {4:9.07f} s/batch)'
-              .format(i, train_accuracy, nbatches, dtcheck, t1batch))
+              .format(i - num_steps_burn_in, train_accuracy, nbatches, dtcheck, t1batch))
         tcheck_prev = time.time()
+        check_duration += (time.time() - tcheck)
         
       start_train = time.time()              # measure training time per batch
+ 
       if FLAGS.with_profiling:
         run_metadata = tf.RunMetadata()
         train_step_ = sess.run(train_step, feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5},
                 options=tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE), run_metadata=run_metadata)
       else:
         train_step_ = sess.run(train_step, feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
-        #-train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
-      duration = time.time() - start_train   # measure training time per batch
-      if (i > num_steps_burn_in):
-          total_duration += duration
-          total_duration_squared += duration * duration
 
+      duration = time.time() - start_train   # measure training time per batch
+      if (i >= num_steps_burn_in):
+          train_duration += duration
+          train_duration_squared += duration * duration
+    
+    start_test = time.time()
     param_accuracy = accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0})
-    param_runtime = time.time() - start
-    print('test accuracy %g' % param_accuracy)
-    print('run in %g s, %g s' % (param_runtime, total_duration))
-    mn = total_duration / mnist_steps
-    vr = total_duration_squared / mnist_steps - mn * mn
+    test_duration = time.time() - start_test
+    total_runtime = time.time() - burn_in_end
+
+    mn = train_duration / mnist_steps
+    vr = train_duration_squared / mnist_steps - mn * mn
     sd = math.sqrt(vr)
+    print('test accuracy %g' % param_accuracy)
+    print('run in %g s, test: %g s, checks: %g s, train: %g s, burn_in: %g s' % 
+         (total_runtime, test_duration, check_duration, train_duration, burn_in_end - start))
     print('mean per batch %g +/- %g s' % (mn, sd))
     param_entries.append(ParamEntry(
                          datetime.now(), os.path.basename(__file__), 
                          "", mnist_batchsize, mnist_steps, param_accuracy, 
-                         total_duration, mn, sd))
+                         total_runtime, test_duration, train_duration, mn, sd))
 
     # Dump profiling data (*)
     if FLAGS.with_profiling:
