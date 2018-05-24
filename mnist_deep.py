@@ -144,7 +144,7 @@ def main(_):
   param_entries.append(ParamHeader) 
   check_step = 1000
   mnist_batchsize = 50
-  mnist_epochs = 20000
+  mnist_steps = 20000
   
   if FLAGS.with_profiling :
     nepochs = 2
@@ -153,10 +153,10 @@ def main(_):
   if FLAGS.mnist_batch > -1:
     mnist_batchsize = FLAGS.mnist_batch
   
-  if FLAGS.mnist_epochs > -1:
-    mnist_epochs = FLAGS.mnist_epochs
+  if FLAGS.mnist_steps > -1:
+    mnist_steps = FLAGS.mnist_steps
   
-  print("mnist_epochs: ", mnist_epochs)
+  print("mnist_steps: ", mnist_steps)
 
   print("Ready for training, start time counting")
   # start time
@@ -165,7 +165,7 @@ def main(_):
 
   with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    for i in range(mnist_epochs):
+    for i in range(mnist_steps):
       batch = mnist.train.next_batch(mnist_batchsize)
 
       if i % check_step == 0:
@@ -191,7 +191,7 @@ def main(_):
     param_runtime = time.time() - start
     print('test accuracy %g' % param_accuracy)
     print('run in %g s' % param_runtime)
-    param_entries.append(ParamEntry(datetime.now(), os.path.basename(__file__), mnist_batchsize, mnist_epochs, param_accuracy, param_runtime))
+    param_entries.append(ParamEntry(datetime.now(), os.path.basename(__file__), mnist_batchsize, mnist_steps, param_accuracy, param_runtime))
 
 	# Dump profiling data (*)
     if FLAGS.with_profiling:
@@ -219,10 +219,10 @@ if __name__ == '__main__':
                       help='Directory for storing input data')
   parser.add_argument("--mnist_batch", type=int, default=-1,
 		help="Batch size")                      
-  parser.add_argument("--mnist_epochs", type=int, default=-1,
-		help="Number of epochs to train")
+  parser.add_argument("--mnist_steps", type=int, default=-1,
+		help="Number of steps to train")
   parser.add_argument("--with_profiling", nargs='?', const=True, type=bool, default=False,
-		help="(experimental) Enable profiling. If --mnist_epochs is not specified, only 2 epochs are processed!")
+		help="(experimental) Enable profiling. If --mnist_steps is not specified, only 2 epochs are processed!")
   parser.add_argument('--csv_file', type=str,
                       default='',
                       help='File (.csv) to output script results. If no file is passed in, csv file will not be created.')		

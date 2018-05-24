@@ -13,7 +13,7 @@
 #  for mnist_deep.py:
 #  --data_dir       Directory with MNIST input data
 #  --mnist_batch    Batch size
-#  --mnist_epochs   Number of epochs to train
+#  --mnist_steps    Number of steps to train
 #  --csv_file (same as for benchmark_xxx.py)
 ################################################
 USAGEMESSAGE="Usage: $0 {alexnet | googlenet | overfeat | vgg | mnist | all} options \n
@@ -27,7 +27,7 @@ USAGEMESSAGE="Usage: $0 {alexnet | googlenet | overfeat | vgg | mnist | all} opt
                 for mnist_deep.py: \n
                 --data_dir      Directory with MNIST input data \n
                 --mnist_batch   Batch size \n
-                --mnist_epochs  Number of epochs to train \n
+                --mnist_steps   Number of steps to train \n
                 --csv_file      Same as for benchmark_xxx.py)"
 INFOMESSAGE="=> Should now process scripts"
 SCRIPTDIR="$(dirname $0)"
@@ -57,7 +57,7 @@ elif [ $# -ge 2 ] && [ $# -le 8 ]; then
         [[ $i = *"--csv_file"* ]]    && CsvFileOpt=$i && CsvFile=${i#*=} && TFBenchOpts=$TFBenchOpts" $i" && MNISTOpts=$MNISTOpts" $i"
         [[ $i = *"--data_dir"* ]]      && MNISTDataDirOpt=$i   && MNISTData=${i#*=}
         [[ $i = *"--mnist_batch"* ]]   && MNISTBatchSizeOpt=$i && MNISTBatchSize=${i#*=} && MNISTOpts=$MNISTOpts" $i"
-        [[ $i = *"--mnist_epochs"* ]]  && MNISTEpochsOpt=$i    && MNISTEpochs=${i#*=}    && MNISTOpts=$MNISTOpts" $i"
+        [[ $i = *"--mnist_steps"* ]]  && MNISTStepsOpt=$i    && MNISTSteps=${i#*=}    && MNISTOpts=$MNISTOpts" $i"
     done
 else
     echo "ERROR! Too many arguments provided!"
@@ -67,8 +67,7 @@ else
 fi
 
 # MNISTData either default or re-defined, added at the end
-MNISTOpts=$MNISTOpts" $MNISTData
-"
+MNISTOpts=$MNISTOpts" $MNISTData"
 ##
 ################################################
 
