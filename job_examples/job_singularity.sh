@@ -13,26 +13,30 @@
 HOSTNAME=$(hostname)
 DATENOW=$(date +%y%m%d_%H%M%S)
 
-##### MAIN SETUP #####
-HOSTDIR=$PROJECT
+####### MAIN SETUP #######
+TFBenchScript="all"                                  # TF benchmark script to run
+HOSTDIR=$PROJECT                                     # directory at your host to mount inside the container.
 IMGPATH="$HOSTDIR/workspace/singularity-tests"
 SINGULARITYIMG="$IMGPATH/tensorflow-1.5.0-gpu-nv384.81.img"
-TFBenchmarks=$HOSTDIR/workspace/tf-benchmarks
-SYSINFO=$TFBenchmarks/tools/sysinfo.sh
+#-------------------------
+TFBenchmarksHost=$HOSTDIR/workspace/tf-benchmarks    # where tf-benchmarks are  (host)
+LOGDIRHost=$HOSTDIR/workspace/singularity-tests      # where to store log files (host)
 LOGNAME=$DATENOW-$HOSTNAME-singularity
 CSVFILE="$LOGNAME.csv"
-DIRINIMG="/home"                               # mount point inside container
-SCRIPTDIR="$DIRINIMG/workspace/tf-benchmarks"
-TFBenchScript="all"                            # TF benchmark script to run
-TFBenchOpts="--csv_file=$CSVFILE"              # parameteres for TF scripts, e.g. --num_batches=1000 or --data_format=NHWC (for CPU)
-SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $TFBenchScript $TFBenchOpts"
-#########################
+SYSINFO=$TFBenchmarksHost/tools/sysinfo.sh           # script to get info about the host
+DIRINCONTAINER="/home"                               # mount point inside container
+LOGDIRContainer=${LOGDIRHost//$HOSTDIR/$DIRINCONTAINER}
+TFBenchOpts="--csv_file=$LOGDIRContainer/$CSVFILE"      # options for TFBenchmark scripts, e.g.: --num_batches=1000 or --data_format=NHWC (for CPU)
+SCRIPTDIR=${TFBenchmarksHost//$HOSTDIR/$DIRINCONTAINER} # replace host path with one in container
+SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $TFBenchScript $TFBenchOpts" # script to run
+###########################
 
+# get info on the current git revision
 if [ -n $CSVFILE ]; then
-    $($TFBenchmarks/tools/gitinfo.sh >> $CSVFILE)
+    $TFBenchmarksHost/tools/gitinfo.sh >> $LOGDIRHost/$CSVFILE
 fi
 
-LOGFILE="$LOGNAME.out"
+LOGFILE="$LOGDIRHost/$LOGNAME.out"
 echo "=> Running on $HOSTNAME on $DATENOW" >$LOGFILE
 $SYSINFO >> $LOGFILE
 echo "=> Singularity image: $SINGULARITYIMG" >>$LOGFILE
