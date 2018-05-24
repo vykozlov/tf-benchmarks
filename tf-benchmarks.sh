@@ -14,7 +14,7 @@
 #  --data_dir       Directory with MNIST input data
 #  --mnist_batch    Batch size
 #  --mnist_steps    Number of steps to train
-#  --csv_file (same as for benchmark_xxx.py)
+#  --csv_file       Same as for benchmark_xxx.py
 ################################################
 USAGEMESSAGE="Usage: $0 {alexnet | googlenet | overfeat | vgg | mnist | all} options \n
               where options are: \n

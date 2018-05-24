@@ -36,7 +36,7 @@ conv_counter = 1
 pool_counter = 1
 affine_counter = 1
 
-ParamHeader = ['Timestamp', 'Script', 'Info', 'Batch_size', 'Num_batches', 'Data_format', 'Mean', 'StDev']
+ParamHeader = ['Timestamp', 'Script', 'Info', 'Batch_size', 'Num_batches', 'Data_format', 'TotalTime', 'MeanPerBatch', 'StDev']
 ParamEntry = namedtuple('ParamEntry', ParamHeader)
 
 def _conv(inpOp, nIn, nOut, kH, kW, dH, dW, padType):
@@ -144,7 +144,9 @@ def time_tensorflow_run(session, target, info_string):
   sd = math.sqrt(vr)
   print ('%s: %s (batch size: %d) across %d steps, %.3f +/- %.3f sec / batch' %
          (datetime.now(), info_string, FLAGS.batch_size, FLAGS.num_batches, mn, sd))
-  return ParamEntry(datetime.now(), os.path.basename(__file__), info_string, FLAGS.batch_size, FLAGS.num_batches, FLAGS.data_format, mn, sd)
+  return ParamEntry(datetime.now(), os.path.basename(__file__), info_string, 
+                    FLAGS.batch_size, FLAGS.num_batches, FLAGS.data_format, 
+                    total_duration, mn, sd)
 
 def run_benchmark():
   global parameters

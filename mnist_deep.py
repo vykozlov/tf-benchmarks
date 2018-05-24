@@ -30,6 +30,7 @@ import argparse
 import time
 import os
 import sys
+import math
 
 from tensorflow.examples.tutorials.mnist import input_data
 
@@ -40,7 +41,7 @@ import tools.storeincsv as incsv
 
 FLAGS = None
 
-ParamHeader = ['Timestamp', 'Script', 'Batch_size', 'Nepochs', 'TestAccuracy', 'TotalTime']
+ParamHeader = ['Timestamp', 'Script', 'Info', 'Batch_size', 'Num_steps', 'TestAccuracy', 'TotalTime', 'MeanPerBatch', 'StDev']
 ParamEntry = namedtuple('ParamEntry', ParamHeader)
 
 def deepnn(x):
@@ -142,12 +143,14 @@ def main(_):
 
   param_entries = []
   param_entries.append(ParamHeader) 
-  check_step = 1000
+  check_step = 10 #1000
   mnist_batchsize = 50
   mnist_steps = 20000
-  
+  num_steps_burn_in = 10
+    
   if FLAGS.with_profiling :
-    nepochs = 2
+    mnist_steps = 2
+    num_steps_burn_in = 0
     print("=> Profiling is enabled!")
 
   if FLAGS.mnist_batch > -1:
@@ -163,44 +166,57 @@ def main(_):
   start = time.time()
   tcheck_prev = start
 
+  total_duration = 0.0
+  total_duration_squared = 0.0
   with tf.Session() as sess:
     sess.run(tf.global_variables_initializer())
-    for i in range(mnist_steps):
+    for i in range(mnist_steps + num_steps_burn_in):
       batch = mnist.train.next_batch(mnist_batchsize)
 
-      if i % check_step == 0:
+      if (i - num_steps_burn_in) % check_step == 0:
         tcheck = time.time()
-        train_accuracy = accuracy.eval(feed_dict={
-            x: batch[0], y_: batch[1], keep_prob: 1.0})
+        train_accuracy = accuracy.eval(feed_dict={x: batch[0], y_: batch[1], keep_prob: 1.0})
         dtcheck = tcheck - tcheck_prev
         nbatches = check_step if i > 0 else 0
         t1batch = dtcheck/float(nbatches) if nbatches > 0 else 0
         print('step {0:6d}, training accuracy {1:5.3f} ({2:5d} batches trained in {3:6.4f} s, i.e. {4:9.07f} s/batch)'
               .format(i, train_accuracy, nbatches, dtcheck, t1batch))
         tcheck_prev = time.time()
-
+        
+      start_train = time.time()              # measure training time per batch
       if FLAGS.with_profiling:
         run_metadata = tf.RunMetadata()
         train_step_ = sess.run(train_step, feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5},
-				options=tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE), run_metadata=run_metadata)
+                options=tf.RunOptions(trace_level=tf.RunOptions.FULL_TRACE), run_metadata=run_metadata)
       else:
         train_step_ = sess.run(train_step, feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
         #-train_step.run(feed_dict={x: batch[0], y_: batch[1], keep_prob: 0.5})
+      duration = time.time() - start_train   # measure training time per batch
+      if (i > num_steps_burn_in):
+          total_duration += duration
+          total_duration_squared += duration * duration
 
     param_accuracy = accuracy.eval(feed_dict={x: mnist.test.images, y_: mnist.test.labels, keep_prob: 1.0})
     param_runtime = time.time() - start
     print('test accuracy %g' % param_accuracy)
-    print('run in %g s' % param_runtime)
-    param_entries.append(ParamEntry(datetime.now(), os.path.basename(__file__), mnist_batchsize, mnist_steps, param_accuracy, param_runtime))
+    print('run in %g s, %g s' % (param_runtime, total_duration))
+    mn = total_duration / mnist_steps
+    vr = total_duration_squared / mnist_steps - mn * mn
+    sd = math.sqrt(vr)
+    print('mean per batch %g +/- %g s' % (mn, sd))
+    param_entries.append(ParamEntry(
+                         datetime.now(), os.path.basename(__file__), 
+                         "", mnist_batchsize, mnist_steps, param_accuracy, 
+                         total_duration, mn, sd))
 
-	# Dump profiling data (*)
+    # Dump profiling data (*)
     if FLAGS.with_profiling:
       ProfileOptionBuilder = tf.profiler.ProfileOptionBuilder
       opts = ProfileOptionBuilder(ProfileOptionBuilder.time_and_memory()).with_node_names().build()
       tf.profiler.profile(tf.get_default_graph(),
-			run_meta=run_metadata,
-			cmd='code',
-			options=opts)
+            run_meta=run_metadata,
+            cmd='code',
+            options=opts)
 
 #    prof_timeline = tf.python.client.timeline.Timeline(run_metadata.step_stats)
 #    prof_ctf = prof_timeline.generate_chrome_trace_format()
@@ -218,13 +234,13 @@ if __name__ == '__main__':
                       default='/tmp/tensorflow/mnist/input_data',
                       help='Directory for storing input data')
   parser.add_argument("--mnist_batch", type=int, default=-1,
-		help="Batch size")                      
+        help="Batch size")                      
   parser.add_argument("--mnist_steps", type=int, default=-1,
-		help="Number of steps to train")
+        help="Number of steps to train")
   parser.add_argument("--with_profiling", nargs='?', const=True, type=bool, default=False,
-		help="(experimental) Enable profiling. If --mnist_steps is not specified, only 2 epochs are processed!")
+        help="(experimental) Enable profiling. If --mnist_steps is not specified, only 2 epochs are processed!")
   parser.add_argument('--csv_file', type=str,
                       default='',
-                      help='File (.csv) to output script results. If no file is passed in, csv file will not be created.')		
+                      help='File (.csv) to output script results. If no file is passed in, csv file will not be created.')      
   FLAGS, unparsed = parser.parse_known_args()
   tf.app.run(main=main, argv=[sys.argv[0]] + unparsed)
