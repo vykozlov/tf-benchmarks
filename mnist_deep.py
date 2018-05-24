@@ -143,7 +143,7 @@ def main(_):
 
   param_entries = []
   param_entries.append(ParamHeader) 
-  check_step = 10 #1000
+  check_step = 1000
   mnist_batchsize = 50
   mnist_steps = 20000
   num_steps_burn_in = 10
