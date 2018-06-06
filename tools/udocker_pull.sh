@@ -11,7 +11,7 @@
 ################
 
 ### MAIN CONFIG ###
-DEFAULTTAG="1.6.0-gpu"
+DEFAULTTAG="1.5.1-gpu"
 DOCKERIMG="tensorflow/tensorflow"
 #DEFAULTTAG="1.4.1-gpu-nv384.81"
 #DOCKERIMG="vykozlov/tensorflow:$DOCKERTAG"

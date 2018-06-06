@@ -15,6 +15,7 @@ DATENOW=$(date +%y%m%d_%H%M%S)
 ####### MAIN CONFIG #######
 TFBenchScript="all"                                  # TF benchmark script to run
 UCONTAINER="tf160-gpu"                               # container to use
+NUMGPUS=1                                            # in some systems a node has >1 GPU. e.g. in ForHLR2 one can set NUMGPUS=4 (max)
 #--------------------------
 UDOCKER_DIR="$PROJECT/.udocker"                      # udocker main directory.
 UDOCKERSETUP="--execmode=F3 --nvidia"                # udocker setup settings.
@@ -44,4 +45,12 @@ echo "=> Running on $(hostname) ..."
 echo "==================================="
 
 # For udocker debugging specify "udocker -D run " + the rest
-udocker run --volume=$HOSTDIR:$DIRINCONTAINER --workdir=$DIRINCONTAINER ${UCONTAINER} $SCRIPT
+if [ $NUMGPUS -ge 2 ]; then
+    for (( i=0; i<$NUMGPUS; i++ ));
+    do
+        udocker run --volume=$HOSTDIR:$DIRINCONTAINER --env="CUDA_VISIBLE_DEVICES=$i" --workdir=$DIRINCONTAINER ${UCONTAINER} $SCRIPT &
+    done
+    wait  ### IMPORTANT!
+else
+    udocker run --volume=$HOSTDIR:$DIRINCONTAINER --workdir=$DIRINCONTAINER ${UCONTAINER} $SCRIPT
+fi
