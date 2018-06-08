@@ -33,7 +33,7 @@ INFOMESSAGE="=> Should now process scripts"
 SCRIPTDIR="$(dirname $0)"
 TFBenchmarks=$SCRIPTDIR
 DATASETS=$TFBenchmarks/datasets
-MNISTData="--data_dir=$DATASETS/mnist/input_data"
+MNISTDataDirOpt="--data_dir=$DATASETS/mnist/input_data"
 
 ## Check correctness of the script call #
 arr=("$@")
@@ -66,8 +66,9 @@ else
     exit 2
 fi
 
-# MNISTData either default or re-defined, added at the end
-MNISTOpts=$MNISTOpts" $MNISTData"
+# MNISTDataDirOpt either default or re-defined, added at the end
+MNISTOpts=$MNISTOpts" $MNISTDataDirOpt"
+echo "MNISTopts: "$MNISTOpts
 ##
 ################################################
 
