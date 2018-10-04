@@ -3,7 +3,7 @@
 # This script supposes to:
 # 1. run TensorFlow benchmarks inside the container by means of udocker
 #
-# VKozlov @23-Mar-2018
+# VKozlov @23-Mar-2018, 10-Oct-2018
 #
 # udocker: https://github.com/indigo-dc/udocker
 #
