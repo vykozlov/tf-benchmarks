@@ -1,0 +1,48 @@
+FROM tensorflow/tensorflow:1.8.0-gpu
+
+LABEL maintainer='Valentin Kozlov'
+# Dockerfile for tf-benchamrks, GPU version
+
+RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
+    apt install -y --no-install-recommends git && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* && \
+    rm -rf /root/.cache/pip/* && \
+    rm -rf /tmp/*
+
+RUN pip --no-cache-dir install future && \
+    rm -rf /root/.cache/pip/* && \
+    rm -rf /tmp/*
+
+# For CUDA profiling, TensorFlow requires CUPTI.
+ENV LD_LIBRARY_PATH /usr/local/cuda/extras/CUPTI/lib64:$LD_LIBRARY_PATH
+
+# Set the working directory to /benchmarks
+WORKDIR /benchmarks
+
+### Copy the current directory contents into the container at /benchmarks
+## => instead clone it from github. see below
+##ADD . /benchmarks
+
+# Install latest version of tf-benchmarks:
+RUN git clone https://github.com/vykozlov/tf-benchmarks /benchmarks
+
+# For MNIST data to be downloaded:
+ENV WEBLECUN http://yann.lecun.com/exdb/mnist
+ENV MNIST /benchmarks/datasets/mnist/input_data
+
+### download train and test sets 
+RUN curl -o ${DOCKERMNIST}/train-images-idx3-ubyte.gz \
+    ${WEBLECUN}/train-images-idx3-ubyte.gz && \
+    ### training labels
+    curl -o ${DOCKERMNIST}/train-labels-idx1-ubyte.gz \
+    ${WEBLECUN}/train-labels-idx1-ubyte.gz && \
+    ### test images
+    curl -o ${DOCKERMNIST}/t10k-images-idx3-ubyte.gz \
+    ${WEBLECUN}/t10k-images-idx3-ubyte.gz && \
+    ### test labels
+    curl -o ${DOCKERMNIST}/t10k-labels-idx1-ubyte.gz \
+    ${WEBLECUN}/t10k-labels-idx1-ubyte.gz
+
+# Run app.py when the container launches
+CMD ["python", "benchmark_alexnet.py"]

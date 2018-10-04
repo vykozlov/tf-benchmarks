@@ -1,1 +1,1 @@
-Dockerfile-tf150-nv384.81.gpu
+Dockerfile.cpu
