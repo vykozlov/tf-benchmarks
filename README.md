@@ -81,7 +81,8 @@ To build your own docker images, one needs `docker-ce` (e.g. https://docs.docker
 Dockerfiles here are based on https://github.com/tensorflow/tensorflow/tree/master/tensorflow/tools/docker
 
 ## Dockerfile Versions
-**Dockerfile.cpu**: CPU version based on TF Dockerfile for CPU (starts with ubuntu:16.04)
+**Dockerfile.cpu**: CPU version based on Tensorflow for CPU (starts with FROM tensorflow/tensorflow:1.8.0)
+**Dockerfile.gpu**: GPU version based on Tensorflow for GPU (starts with FROM tensorflow/tensorflow:1.8.0-gpu)
 
 **Dockerfile-tf{141|150}-nv384.81.gpu**: GPU versions based on TF Dockerfile for GPU (CUDA{8|9} and CuDNN{6|7}). 
 nvidia driver 384.81 is installed in the produced container(s). If a host machine has the same nvidia driver version (384.81), it allows to run containers on GPUs of such a host machine by means of e.g. singularity 2.2.1.
