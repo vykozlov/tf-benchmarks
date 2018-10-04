@@ -82,6 +82,7 @@ Dockerfiles here are based on https://github.com/tensorflow/tensorflow/tree/mast
 
 ## Dockerfile Versions
 **Dockerfile.cpu**: CPU version based on Tensorflow for CPU (starts with FROM tensorflow/tensorflow:1.8.0)
+
 **Dockerfile.gpu**: GPU version based on Tensorflow for GPU (starts with FROM tensorflow/tensorflow:1.8.0-gpu)
 
 **Dockerfile-tf{141|150}-nv384.81.gpu**: GPU versions based on TF Dockerfile for GPU (CUDA{8|9} and CuDNN{6|7}). 
