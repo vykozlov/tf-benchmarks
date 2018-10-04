@@ -70,7 +70,7 @@ $> curl https://raw.githubusercontent.com/mariojmdavid/udocker/devel/udocker.py 
 $> chmod u+rx ./udocker
 $> ./udocker install 
 ```
-2. look into `tools/udocker_pull.sh` script and specify which TensorFlow you want to pull. Note the name of the created container. List of available containers is given by `udocker ps`
+2. look into `tools/udocker_pull_n_setup.sh` script and specify which TensorFlow you want to pull. The script will also create container and setup its execution mode. If --nvidia option is given, you need CUDA installed. Note the name of the created container. List of available containers is given by `udocker ps`
 
 3. have a look into `job_examples/job_udocker.sh` to adjust e.g. where `tf-benchmarks` are installed (`$PROJECT/workspace/tf-benchmarks` by default). Run the script with the proper udocker container name (check with `udocker ps`).
 
