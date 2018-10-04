@@ -116,10 +116,13 @@ TFVers=$(python $TFBenchmarks/tools/tf_vers.py)
 echo "=================================="
 echo "=> Python version: $PyVers"
 echo "=> Tensorflow version: $TFVers"
+echo "=> Git info"
+$TFBenchmarks/tools/gitinfo.sh
 echo "=================================="
 if [ -n $CsvFile ]; then
    echo "Python, $PyVers" >> $CsvFile
    echo "TensorFlow, $TFVers" >> $CsvFile
+   $TFBenchmarks/tools/gitinfo.sh >> $CsvFile
 fi
 
 for (( i=0; i<${TFTestLen}; i++ ));

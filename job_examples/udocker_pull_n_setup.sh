@@ -15,8 +15,8 @@
 UDOCKER_DIR="$PROJECT/.udocker"  # udocker main directory.
 
 ### Default settings. Will be overwritten from the command line (preferred way!)
-DEFAULTIMG="tensorflow/tensorflow:1.8.0-gpu"
-UCONTAINER="tf180gpu"
+DEFAULTIMG="vykozlov/tf-benchmarks:latest-gpu"
+UCONTAINER="tfbench-gpu"
 ####
 
 UDOCKERSETUP="--execmode=F3 --nvidia"

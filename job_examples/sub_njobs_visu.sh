@@ -3,8 +3,9 @@
 # Script to submit N jobs 
 # via msub command on a GPU cluster
 #####################################
-JOB2RUN=./job_udocker.sh
-NJOB=2
+#JOB2RUN="./udocker_pull_n_setup.sh"
+JOB2RUN="./job_udocker.sh"
+NJOB=1
 for j in $(seq 1 $NJOB)
 do 
     echo "Submitting job $j out of $NJOB.."
