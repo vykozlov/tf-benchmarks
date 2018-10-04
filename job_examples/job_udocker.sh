@@ -22,19 +22,19 @@ UDOCKERSETUP="--execmode=F3 --nvidia"                # udocker setup settings.
 HOSTDIR=$PROJECT                                     # directory at your host to mount inside the container.
 TFBenchmarksHost=$HOSTDIR/workspace/tf-benchmarks    # where tf-benchmarks are  (host)
 LOGDIRHost=$HOSTDIR/workspace/udocker-tests          # where to store log files (host)
-CSVFILE="$DATENOW-$HOSTNAME-udocker-$UCONTAINER.csv"
 DIRINCONTAINER="/home"                               # mount point inside container
 LOGDIRContainer=${LOGDIRHost//$HOSTDIR/$DIRINCONTAINER}
-TFBenchOpts="--csv_file=$LOGDIRContainer/$CSVFILE"      # options for TFBenchmark scripts, e.g.: --num_batches=1000 or --data_format=NHWC (for CPU)
 SCRIPTDIR=${TFBenchmarksHost//$HOSTDIR/$DIRINCONTAINER} # replace host path with one in container
-SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $TFBenchScript $TFBenchOpts" # script to run
+MNISTDATA="$SCRIPTDIR/datasets/mnist/input_data"     # where MNIST data are located
 ###########################
 echo $SCRIPT
 
-# get info on the current git revision
-if [ -n $CSVFILE ]; then
-    $TFBenchmarksHost/tools/gitinfo.sh >> $LOGDIRHost/$CSVFILE
-fi
+git_info () {
+    # get info on the current git revision
+    if [ -n $CSVFILE ]; then
+        $TFBenchmarksHost/tools/gitinfo.sh >> $LOGDIRHost/$CSVFILE
+    fi
+}
 
 echo "=> Doing the setup"
 udocker setup $UDOCKERSETUP ${UCONTAINER}
@@ -48,9 +48,17 @@ echo "==================================="
 if [ $NUMGPUS -ge 2 ]; then
     for (( i=0; i<$NUMGPUS; i++ ));
     do
+        CSVFILE="$DATENOW-$HOSTNAME-udocker-$UCONTAINER-gpu$i.csv"                       # let us have one CSV file per GPU
+        TFBenchOpts="--csv_file=$LOGDIRContainer/$CSVFILE --data_dir=$MNISTDATA"      # options for TFBenchmark scripts, e.g.: --num_batches=1000 or --data_format=NHWC (for CPU)
+        SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $TFBenchScript $TFBenchOpts" # script to run
+        git_info
         udocker run --volume=$HOSTDIR:$DIRINCONTAINER --env="CUDA_VISIBLE_DEVICES=$i" --workdir=$DIRINCONTAINER ${UCONTAINER} $SCRIPT &
     done
     wait  ### IMPORTANT!
 else
+    CSVFILE="$DATENOW-$HOSTNAME-udocker-$UCONTAINER.csv"
+    TFBenchOpts="--csv_file=$LOGDIRContainer/$CSVFILE  --data_dir=$MNISTDATA"      # options for TFBenchmark scripts, e.g.: --num_batches=1000 or --data_format=NHWC (for CPU)
+    SCRIPT="$SCRIPTDIR/tf-benchmarks.sh $TFBenchScript $TFBenchOpts" # script to run
+    git_info
     udocker run --volume=$HOSTDIR:$DIRINCONTAINER --workdir=$DIRINCONTAINER ${UCONTAINER} $SCRIPT
 fi
