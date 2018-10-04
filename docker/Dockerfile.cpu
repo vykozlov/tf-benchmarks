@@ -1,7 +1,7 @@
 FROM tensorflow/tensorflow:1.8.0
 
 LABEL maintainer='Valentin Kozlov'
-# Dockerfile for tf-benchamrks, GPU version
+# Dockerfile for tf-benchamrks, CPU version
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update && \
     apt install -y --no-install-recommends git && \
