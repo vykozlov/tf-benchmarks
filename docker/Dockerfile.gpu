@@ -44,5 +44,5 @@ RUN curl -o ${MNISTDOCKER}/train-images-idx3-ubyte.gz \
     curl -o ${MNISTDOCKER}/t10k-labels-idx1-ubyte.gz \
     ${WEBLECUN}/t10k-labels-idx1-ubyte.gz
 
-# Run app.py when the container launches
+# Run benchmark_alexnet.py when the container launches
 CMD ["python", "benchmark_alexnet.py"]
