@@ -20,7 +20,7 @@ USAGEMESSAGE="Usage: $0 {alexnet | googlenet | overfeat | vgg | mnist | all} opt
               where options are: \n
                 for benchmark_xxx.py scripts: \n
                 --batch_size    Batch size \n
-                --num_bathces   Number of batches to run \n
+                --num_batches   Number of batches to run \n
                 --data_format   The data format for ConvNet operations. Can be either NHWC (CPU) or NCHW (default) \n
                 --csv_file      File (.csv) to output script results and information \n\n
 

@@ -1,1 +1,1 @@
-Dockerfile.cpu
+docker/Dockerfile.cpu
