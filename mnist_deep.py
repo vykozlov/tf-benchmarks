@@ -168,8 +168,11 @@ def main(_):
   train_duration = 0.0
   train_duration_squared = 0.0
   check_duration = 0.0
+ 
+  config = tf.ConfigProto()
+  config.gpu_options.per_process_gpu_memory_fraction = FLAGS.gpu_fraction
   
-  with tf.Session() as sess:
+  with tf.Session(config=config) as sess:
     sess.run(tf.global_variables_initializer())
     batch0 = mnist.train.next_batch(mnist_batchsize) # for burn_in we can use a fixed batch
     for i in range(mnist_steps + num_steps_burn_in):
@@ -249,6 +252,8 @@ if __name__ == '__main__':
         help="Batch size")                      
   parser.add_argument("--mnist_steps", type=int, default=-1,
         help="Number of steps to train")
+  parser.add_argument("--gpu_fraction", type=float, default=1.0,
+        help="GPU Memory fraction to use 0..1. Default is 1, i.e. full memory is used.")
   parser.add_argument("--with_profiling", nargs='?', const=True, type=bool, default=False,
         help="(experimental) Enable profiling. If --mnist_steps is not specified, only 2 epochs are processed!")
   parser.add_argument('--csv_file', type=str,
