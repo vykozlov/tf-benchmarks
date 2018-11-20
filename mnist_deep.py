@@ -252,8 +252,8 @@ if __name__ == '__main__':
         help="Batch size")                      
   parser.add_argument("--mnist_steps", type=int, default=-1,
         help="Number of steps to train")
-  parser.add_argument("--gpu_fraction", type=float, default=1.0,
-        help="GPU Memory fraction to use 0..1. Default is 1, i.e. full memory is used.")
+  parser.add_argument("--gpu_fraction", type=float, default=0.9,
+        help="GPU Memory fraction to use 0..1. Default is 0.9.")
   parser.add_argument("--with_profiling", nargs='?', const=True, type=bool, default=False,
         help="(experimental) Enable profiling. If --mnist_steps is not specified, only 2 epochs are processed!")
   parser.add_argument('--csv_file', type=str,

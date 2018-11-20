@@ -16,9 +16,8 @@ tf.app.flags.DEFINE_integer('batch_size', 64,
                             """Batch size.""")
 tf.app.flags.DEFINE_integer('num_batches', 100,
                             """Number of batches to run.""")
-tf.app.flags.DEFINE_float('gpu_fraction', 1.,
-                            """GPU Memory fraction to use 0..1. Default is 1, 
-                            i.e. full memory is used.""")
+tf.app.flags.DEFINE_float('gpu_fraction', 0.9,
+                            """GPU Memory fraction to use 0..1. Default is 0.9.""")
 tf.app.flags.DEFINE_boolean('forward_only', False,
                             """Only run the forward pass.""")
 tf.app.flags.DEFINE_boolean('forward_backward_only', False,
