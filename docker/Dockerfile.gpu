@@ -1,4 +1,4 @@
-FROM tensorflow/tensorflow:1.5.0-gpu
+FROM tensorflow/tensorflow:1.8.0-gpu
 
 LABEL maintainer='Valentin Kozlov'
 # Dockerfile for tf-benchamrks, GPU version

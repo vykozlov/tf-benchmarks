@@ -21,6 +21,7 @@ USAGEMESSAGE="Usage: $0 {alexnet | googlenet | overfeat | vgg | mnist | all} opt
                 for benchmark_xxx.py scripts: \n
                 --batch_size    Batch size \n
                 --num_batches   Number of batches to run \n
+                --gpu_fraction  Fraction of GPU memory to use \n
                 --data_format   The data format for ConvNet operations. Can be either NHWC (CPU) or NCHW (default) \n
                 --csv_file      File (.csv) to output script results and information \n\n
 
@@ -53,6 +54,7 @@ elif [ $# -ge 2 ] && [ $# -le 8 ]; then
     for i in "${arr[@]}"; do
         [[ $i = *"--batch_size"* ]]  && TFBatchSizeOpt=$i  && TFBatchSize=${i#*=}  && TFBenchOpts=$TFBenchOpts" $i"
         [[ $i = *"--num_batches"* ]] && TFNumBatchesOpt=$i && TFNumBatches=${i#*=} && TFBenchOpts=$TFBenchOpts" $i"
+        [[ $i = *"--gpu_fraction"* ]] && TFGPUFractionOpt=$i && TFGPUFraction=${i#*=} && TFBenchOpts=$TFBenchOpts" $i" && MNISTOpts=$MNISTOpts" $i"
         [[ $i = *"--data_format"* ]] && TFDataFormatOpt=$i && TFDataFormat=${i#*=} && TFBenchOpts=$TFBenchOpts" $i"       
         [[ $i = *"--csv_file"* ]]    && CsvFileOpt=$i && CsvFile=${i#*=} && TFBenchOpts=$TFBenchOpts" $i" && MNISTOpts=$MNISTOpts" $i"
         [[ $i = *"--data_dir"* ]]      && MNISTDataDirOpt=$i   && MNISTData=${i#*=}
